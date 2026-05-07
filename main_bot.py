@@ -2,7 +2,7 @@ import asyncio
 import json
 import logging
 import os
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Tuple
 
 import requests
 import aiohttp
@@ -395,10 +395,10 @@ def get_services_request(branch_id: int):
     return r.json()
 
 
-def create_visit(branch_id: int, entry_point_id: int, service_id: int, customer_id: str, customer_name: str):
+def create_visit(branch_id: int, entry_point_id: int, service_ids: List[int], customer_id: str, customer_name: str):
     url = f'{ORCHESTRA_URL}rest/entrypoint/branches/{branch_id}/entryPoints/{entry_point_id}/visits/'
     data = {
-        "services": [service_id],
+        "services": service_ids,
         "parameters": {
             "TelegramCustomerId": customer_id,
             "TelegramCustomerFullName": customer_name,
@@ -414,19 +414,49 @@ def create_visit(branch_id: int, entry_point_id: int, service_id: int, customer_
     return None
 
 
-def get_services(branch_id: int):
+
+
+def is_multi_service_enabled(branch: BranchConfig) -> bool:
+    global_enabled = os.getenv("ORCHESTRA_MULTI_SERVICE_ENABLED", "false").lower() in {"1", "true", "yes", "on"}
+    raw = os.getenv("ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED", "")
+    if not raw:
+        return global_enabled
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        logging.warning("Invalid ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED JSON: %s", raw)
+        return global_enabled
+
+    branch_value = parsed.get(str(branch.branch_id), parsed.get(branch.prefix)) if isinstance(parsed, dict) else None
+    if branch_value is None:
+        return global_enabled
+    return str(branch_value).lower() in {"1", "true", "yes", "on"}
+
+
+def get_services_data(branch_id: int) -> List[dict]:
     items = get_services_request(branch_id)
+    return [
+        service for service in items
+        if (service.get('internalName') or service.get('name') or str(service.get('id'))) not in SERVICE_BLACKLIST
+    ]
+
+
+def build_services_keyboard(services: List[dict], selected_ids: Set[int], multi_enabled: bool) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(row_width=2)
+    for service in services:
+        service_id = int(service['id'])
+        name = service.get('internalName') or service.get('name') or str(service_id)
+        prefix = "✅ " if service_id in selected_ids else ""
+        keyboard.insert(InlineKeyboardButton(text=f"{prefix}{name}", callback_data=f"service:{service_id}"))
 
-    for service in items:
-        name = service.get('internalName') or service.get('name') or str(service.get('id'))
-        if name in SERVICE_BLACKLIST:
-            continue
-        keyboard.insert(InlineKeyboardButton(text=name, callback_data=str(service['id'])))
-
+    if multi_enabled:
+        keyboard.add(InlineKeyboardButton(text="Подтвердить выбор", callback_data="service:confirm"))
     return keyboard
 
 
+def get_services(branch_id: int, selected_ids: Set[int] = None, multi_enabled: bool = False) -> Tuple[InlineKeyboardMarkup, List[dict]]:
+    services = get_services_data(branch_id)
+    return build_services_keyboard(services, selected_ids or set(), multi_enabled), services
 @dp.message_handler(commands=["start"])
 async def cmd_start(message: types.Message, state: FSMContext):
     await state.finish()
@@ -434,10 +464,9 @@ async def cmd_start(message: types.Message, state: FSMContext):
     await message.answer("Выберите действие:", reply_markup=main_menu_keyboard)
 
 
-@dp.callback_query_handler(lambda c: c.data.isdigit(), state="*")
+@dp.callback_query_handler(lambda c: c.data.startswith("service:"), state="*")
 async def pick_service(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
-    service_id = int(callback.data)
     state_data = await state.get_data()
     branch_id = int(state_data.get("branch_id", BRANCH_ID))
     branch = BRANCH_MAP.get(branch_id)
@@ -446,10 +475,32 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
         await state.finish()
         return
 
+    multi_enabled = is_multi_service_enabled(branch)
+    selected_service_ids = set(state_data.get("selected_service_ids", []))
+
+    service_data = callback.data.split(":", 1)[1]
+    if service_data == "confirm":
+        if not selected_service_ids:
+            await bot.send_message(callback.from_user.id, "Выберите хотя бы одну услугу")
+            return
+        service_ids = sorted(selected_service_ids)
+    else:
+        service_id = int(service_data)
+        if multi_enabled:
+            if service_id in selected_service_ids:
+                selected_service_ids.remove(service_id)
+            else:
+                selected_service_ids.add(service_id)
+            await state.update_data(selected_service_ids=list(selected_service_ids))
+            keyboard, _ = get_services(branch_id, selected_service_ids, multi_enabled=True)
+            await callback.message.edit_reply_markup(reply_markup=keyboard)
+            return
+        service_ids = [service_id]
+
     visit = create_visit(
         branch.branch_id,
         branch.entry_point_id,
-        service_id,
+        service_ids,
         str(callback.from_user.id),
         callback.from_user.full_name,
     )
@@ -457,11 +508,6 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
         ticket = visit.get("ticketId") or visit.get("ticket")
         await bot.send_message(callback.from_user.id, f"Ваш талон: {ticket}")
         USER_BRANCH_SUBSCRIPTIONS.setdefault(callback.from_user.id, set()).add(branch.prefix)
-#         await bot.send_message(
-#             callback.from_user.id,
-#             "Хотите ещё? Выберите услугу:",
-#             reply_markup=get_services(BRANCH_ID)
-#         )
     else:
         await bot.send_message(callback.from_user.id, "Ошибка создания талона")
 
@@ -478,7 +524,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
             await bot.send_message(
                 callback.from_user.id,
                 "Выберите услугу:",
-                reply_markup=get_services(single_branch_id)
+                reply_markup=get_services(single_branch_id, set(), is_multi_service_enabled(BRANCH_MAP[single_branch_id]))[0]
             )
             await state.set_state(States.get_ticket)
         else:
@@ -498,7 +544,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
         await bot.send_message(
             callback.from_user.id,
             "Выберите услугу:",
-            reply_markup=get_services(branch_id)
+            reply_markup=get_services(branch_id, set(), is_multi_service_enabled(BRANCH_MAP[branch_id]))[0]
         )
         await state.set_state(States.get_ticket)
 
