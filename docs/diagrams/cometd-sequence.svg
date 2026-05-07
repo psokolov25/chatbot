@@ -1,1 +1,179 @@
-<?plantuml 1.2026.1?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="731px" preserveAspectRatio="none" style="width:804px;height:731px;background:#FFFFFF;" version="1.1" viewBox="0 0 804 731" width="804px" zoomAndPan="magnify"><title>CometD-&#1087;&#1086;&#1076;&#1087;&#1080;&#1089;&#1082;&#1072; &#1080; &#1076;&#1086;&#1089;&#1090;&#1072;&#1074;&#1082;&#1072; VISIT_CALL &#1074; Telegram</title><defs/><g><text fill="#000000" font-family="Arial" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="424.1973" x="186.2986" y="27.9951">CometD-&#1087;&#1086;&#1076;&#1087;&#1080;&#1089;&#1082;&#1072; &#1080; &#1076;&#1086;&#1089;&#1090;&#1072;&#1074;&#1082;&#1072; VISIT_CALL &#1074; Telegram</text><rect fill="none" height="75.3984" style="stroke:#000000;stroke-width:1.5;" width="488.8389" x="10" y="355.7891"/><g class="participant-lifeline" data-entity-uid="part1" data-qualified-name="Bot" id="part1-lifeline"><g><title>Telegram Orchestra Bot</title><rect fill="#000000" fill-opacity="0.00000" height="532.5234" width="8" x="107.082" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="111" x2="111" y1="118.5938" y2="651.1172"/></g></g><g class="participant-lifeline" data-entity-uid="part2" data-qualified-name="CometD" id="part2-lifeline"><g><title>Qmatic Orchestra 6</title><rect fill="#000000" fill-opacity="0.00000" height="532.5234" width="8" x="409.2402" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="412.6416" x2="412.6416" y1="118.5938" y2="651.1172"/></g></g><g class="participant-lifeline" data-entity-uid="part3" data-qualified-name="Telegram" id="part3-lifeline"><g><title>Telegram Bot API</title><rect fill="#000000" fill-opacity="0.00000" height="532.5234" width="8" x="562.4565" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="565.8389" x2="565.8389" y1="118.5938" y2="651.1172"/></g></g><g class="participant-lifeline" data-entity-uid="part4" data-qualified-name="User" id="part4-lifeline"><g><title>..........</title><rect fill="#000000" fill-opacity="0.00000" height="532.5234" width="8" x="742.4819" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="746.1694" x2="746.1694" y1="118.5938" y2="651.1172"/></g></g><g class="participant participant-head" data-entity-uid="part1" data-qualified-name="Bot" id="part1-head"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="182.1641" x="20" y="87.2969"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="168.1641" x="27" y="107.292">Telegram Orchestra Bot</text></g><g class="participant participant-tail" data-entity-uid="part1" data-qualified-name="Bot" id="part1-tail"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="182.1641" x="20" y="650.1172"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="168.1641" x="27" y="670.1123">Telegram Orchestra Bot</text></g><g class="participant participant-head" data-entity-uid="part2" data-qualified-name="CometD" id="part2-head"><rect fill="#FFFFFF" height="46.5938" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="151.1973" x="337.6416" y="71"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="137.1973" x="344.6416" y="90.9951">Qmatic Orchestra 6</text><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="117.6465" x="354.417" y="107.292">CometD / events</text></g><g class="participant participant-tail" data-entity-uid="part2" data-qualified-name="CometD" id="part2-tail"><rect fill="#FFFFFF" height="46.5938" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="151.1973" x="337.6416" y="650.1172"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="137.1973" x="344.6416" y="670.1123">Qmatic Orchestra 6</text><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="117.6465" x="354.417" y="686.4092">CometD / events</text></g><g class="participant participant-head" data-entity-uid="part3" data-qualified-name="Telegram" id="part3-head"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="135.2354" x="498.8389" y="87.2969"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="121.2354" x="505.8389" y="107.292">Telegram Bot API</text></g><g class="participant participant-tail" data-entity-uid="part3" data-qualified-name="Telegram" id="part3-tail"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="135.2354" x="498.8389" y="650.1172"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="121.2354" x="505.8389" y="670.1123">Telegram Bot API</text></g><g class="participant participant-head" data-entity-uid="part4" data-qualified-name="User" id="part4-head"><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="86.625" x="700.1694" y="115.292">&#1055;&#1086;&#1089;&#1077;&#1090;&#1080;&#1090;&#1077;&#1083;&#1100;</text><ellipse cx="746.4819" cy="50.7969" fill="#E2E2F0" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M746.4819,58.7969 L746.4819,85.7969 M733.4819,66.7969 L759.4819,66.7969 M746.4819,85.7969 L733.4819,100.7969 M746.4819,85.7969 L759.4819,100.7969" fill="none" style="stroke:#181818;stroke-width:0.5;"/></g><g class="participant participant-tail" data-entity-uid="part4" data-qualified-name="User" id="part4-tail"><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="86.625" x="700.1694" y="663.1123">&#1055;&#1086;&#1089;&#1077;&#1090;&#1080;&#1090;&#1077;&#1083;&#1100;</text><ellipse cx="746.4819" cy="674.9141" fill="#E2E2F0" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M746.4819,682.9141 L746.4819,709.9141 M733.4819,690.9141 L759.4819,690.9141 M746.4819,709.9141 L733.4819,724.9141 M746.4819,709.9141 L759.4819,724.9141" fill="none" style="stroke:#181818;stroke-width:0.5;"/></g><rect fill="#EEEEEE" height="3" style="stroke:#EEEEEE;stroke-width:1;" width="797.7944" x="0" y="149.1602"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="797.7944" y1="149.1602" y2="149.1602"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="797.7944" y1="152.1602" y2="152.1602"/><rect fill="#EEEEEE" height="23.1328" style="stroke:#000000;stroke-width:2;" width="209.5396" x="294.1274" y="138.5938"/><text fill="#000000" font-family="Arial" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="191.0137" x="300.1274" y="154.6606">&#1055;&#1086;&#1076;&#1085;&#1103;&#1090;&#1080;&#1077; CometD-&#1089;&#1077;&#1089;&#1089;&#1080;&#1080;</text><g class="message" data-entity-1="part1" data-entity-2="part2" id="msg1"><polygon fill="#181818" points="401.2402,188.8594,411.2402,192.8594,401.2402,196.8594,405.2402,192.8594" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="111.082" x2="407.2402" y1="192.8594" y2="192.8594"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="113.6865" x="205.3179" y="187.7935">/meta/handshake</text></g><g class="message" data-entity-1="part2" data-entity-2="part1" id="msg2"><polygon fill="#181818" points="122.082,217.9922,112.082,221.9922,122.082,225.9922,118.082,221.9922" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="116.082" x2="412.2402" y1="221.9922" y2="221.9922"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="109.1416" x="207.5903" y="216.9263">clientId + cookie</text></g><g class="message" data-entity-1="part1" data-entity-2="part2" id="msg3"><polygon fill="#181818" points="401.2402,277.3906,411.2402,281.3906,401.2402,285.3906,405.2402,281.3906" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="111.082" x2="407.2402" y1="281.3906" y2="281.3906"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="104.876" x="209.7231" y="246.0591">/meta/subscribe</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="189.2363" x="167.543" y="261.1919">/events/{prefix}/QVoiceLight</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="163.3442" x="180.489" y="276.3247">(&#1076;&#1083;&#1103; &#1082;&#1072;&#1078;&#1076;&#1086;&#1075;&#1086; &#1092;&#1080;&#1083;&#1080;&#1072;&#1083;&#1072;)</text></g><g class="message" data-entity-1="part1" data-entity-2="part2" id="msg4"><polygon fill="#181818" points="401.2402,336.7891,411.2402,340.7891,401.2402,344.7891,405.2402,340.7891" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="111.082" x2="407.2402" y1="340.7891" y2="340.7891"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="76.4448" x="223.9387" y="305.4575">publish INIT</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="77.8921" x="223.2151" y="320.5903">/events/INIT</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="167.6733" x="178.3245" y="335.7231">uid={prefix}:QVoiceLight</text></g><path d="M10,355.7891 L86.624,355.7891 L86.624,362.9219 L76.624,372.9219 L10,372.9219 L10,355.7891" fill="#EEEEEE" style="stroke:#000000;stroke-width:1.5;"/><rect fill="none" height="75.3984" style="stroke:#000000;stroke-width:1.5;" width="488.8389" x="10" y="355.7891"/><text fill="#000000" font-family="Arial" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="31.624" x="25" y="368.856">loop</text><text fill="#000000" font-family="Arial" font-size="11" font-weight="bold" lengthAdjust="spacing" textLength="167.4976" x="101.624" y="367.9995">[long-polling connect loop]</text><g class="message" data-entity-1="part1" data-entity-2="part2" id="msg5"><polygon fill="#181818" points="401.2402,390.0547,411.2402,394.0547,401.2402,398.0547,405.2402,394.0547" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="111.082" x2="407.2402" y1="394.0547" y2="394.0547"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="94.3071" x="215.0076" y="388.9888">/meta/connect</text></g><g class="message" data-entity-1="part2" data-entity-2="part1" id="msg6"><polygon fill="#181818" points="122.082,419.1875,112.082,423.1875,122.082,427.1875,118.082,423.1875" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="116.082" x2="412.2402" y1="423.1875" y2="423.1875"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="81.9038" x="221.2092" y="418.1216">meta/events</text></g><rect fill="#EEEEEE" height="3" style="stroke:#EEEEEE;stroke-width:1;" width="797.7944" x="0" y="458.7539"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="797.7944" y1="458.7539" y2="458.7539"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="797.7944" y1="461.7539" y2="461.7539"/><rect fill="#EEEEEE" height="23.1328" style="stroke:#000000;stroke-width:2;" width="224.8501" x="286.4722" y="448.1875"/><text fill="#000000" font-family="Arial" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="206.3242" x="292.4722" y="464.2544">&#1054;&#1073;&#1088;&#1072;&#1073;&#1086;&#1090;&#1082;&#1072; &#1089;&#1086;&#1073;&#1099;&#1090;&#1080;&#1103; &#1074;&#1099;&#1079;&#1086;&#1074;&#1072;</text><g class="message" data-entity-1="part2" data-entity-2="part1" id="msg7"><polygon fill="#181818" points="122.082,513.5859,112.082,517.5859,122.082,521.5859,118.082,517.5859" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="116.082" x2="412.2402" y1="517.5859" y2="517.5859"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="71.7095" x="226.3064" y="497.3872">VISIT_CALL</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="167.4004" x="178.4609" y="512.52">prm.TelegramCustomerId</text></g><g class="message" data-entity-1="part1" data-entity-2="part1" id="msg8"><line style="stroke:#181818;stroke-width:1;" x1="111.082" x2="153.082" y1="561.8516" y2="561.8516"/><line style="stroke:#181818;stroke-width:1;" x1="153.082" x2="153.082" y1="561.8516" y2="574.8516"/><line style="stroke:#181818;stroke-width:1;" x1="112.082" x2="153.082" y1="574.8516" y2="574.8516"/><polygon fill="#181818" points="122.082,570.8516,112.082,574.8516,122.082,578.8516,118.082,574.8516" style="stroke:#181818;stroke-width:1;"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="216.4741" x="153.9241" y="541.6528">&#1074;&#1072;&#1083;&#1080;&#1076;&#1072;&#1094;&#1080;&#1103; &#1092;&#1080;&#1083;&#1080;&#1072;&#1083;&#1072; &#1080; &#1096;&#1072;&#1073;&#1083;&#1086;&#1085;&#1072;</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="288.1582" x="118.082" y="556.7856">VISIT_CALL_TEMPLATE / per-branch override</text></g><g class="message" data-entity-1="part1" data-entity-2="part3" id="msg9"><polygon fill="#181818" points="554.4565,599.9844,564.4565,603.9844,554.4565,607.9844,558.4565,603.9844" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="111.082" x2="560.4565" y1="603.9844" y2="603.9844"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="293.0967" x="192.2209" y="598.9185">sendMessage(chat_id=TelegramCustomerId)</text></g><g class="message" data-entity-1="part3" data-entity-2="part4" id="msg10"><polygon fill="#181818" points="734.4819,629.1172,744.4819,633.1172,734.4819,637.1172,738.4819,633.1172" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="566.4565" x2="740.4819" y1="633.1172" y2="633.1172"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="156.0254" x="578.4565" y="628.0513">&#1091;&#1074;&#1077;&#1076;&#1086;&#1084;&#1083;&#1077;&#1085;&#1080;&#1077; &#1086; &#1074;&#1099;&#1079;&#1086;&#1074;&#1077;</text></g><?plantuml-src TLDHQnD147xVNp7KbnQ9UH1y24I8iS91MbkCzILGDdlRkoMNtNDlhmgbOAk8KA7_GFz26XiDniQ_iFUFdDrBqYkn1xTtE_FDVZFVp1fX4WvjDUJcUSt-jNDxZUkqEBE_xGZi570_BywASpkoOsyx25u5tSDsgzC1EuOkJtYawP2GR21aIl4NifY6wfsG4HpH9EDL3t-RSydu3iyo6l5M8Y89Z4l3TGKLyYEQ9-Q5acQN3ZcqjA19nO-h4KoaL1eu8G3FA1j4MkKoRAj4QNWJ2yETNUcGwzBsuB5_o2aXrV2DPVxmKhEOPqPJ33CRG3FtlOlT7rBSL91FUh9K3kh0Zx6Cp0UMjdjuy5HexGKUk1AFCeCvRjZlJcixGRMd-4xihFZgWQyp58Wqc-0Gs96Ruj9Xx6JPEHzrXkiKMzPi4k9eQayNRcX07R-q7bCPOdS6d2mSDSGuQ0DO8h2088I7m9GQ27xF4LdUpvWMVTwJzRBc-acg-P5uVrhVFr22yOw8OjEJcvZdhBW4DpJsfniZ-yFEeVY4ESxm7U4wsbfZIVD-8h8OWjsWUqjHxd8HDfTaZGeP8ObIAIHAHhLK9OaRFQQavCo0y_XP-5yn2n3wr_Jm_fATS1cMwd-pLyK7pFmA-tJkRmDAFaVZXMyP5ZikBkmlD8tHv_gmTkxjzUd9L0yVBMUWdMS6iJe8bvAKU7UIr-lQZehFdkIkXEwI5bzyKZCalh6ZdhmbEUnkx-nrMjrj7D6KwrfVKybYKCTSQn6kchmQpmRUKHakxkScYwavHD7NazmYgn1NcnjGZ2q-OheJt-i_cCq4it53Ycsl23CX_m00?></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1580" viewBox="0 0 1400 1580" role="img" aria-label="CometD lifecycle: подписка, long-polling, VISIT_CALL и восстановление">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#0F172A"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#DC2626"/>
+    </marker>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0F172A" flood-opacity="0.10"/>
+    </filter>
+    <linearGradient id="titleGradient" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <rect x="24" y="24" width="1352" height="1532" rx="28" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="700.0" y="62" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="url(#titleGradient)" text-anchor="middle">CometD lifecycle: подписка, long-polling, VISIT_CALL и восстановление</text>
+  <rect x="100" y="110" width="160" height="82" rx="18" fill="#ECFDF5" stroke="#0D9488" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="180.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="180.0" dy="0">Queue Bot</tspan>
+  </text>
+  <text x="180.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="180.0" dy="0">main_bot.py</tspan>
+  </text>
+  <polyline points="180,192 180,1480" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="350" y="110" width="160" height="82" rx="18" fill="#F8FAFC" stroke="#64748B" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="430.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="430.0" dy="0">Watchdog</tspan>
+  </text>
+  <text x="430.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="430.0" dy="0">cometd_watchdog</tspan>
+  </text>
+  <polyline points="430,192 430,1480" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="620" y="110" width="160" height="82" rx="18" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="700.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="700.0" dy="0">Orchestra</tspan>
+    <tspan x="700.0" dy="19">CometD</tspan>
+  </text>
+  <text x="700.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="700.0" dy="0">/cometd</tspan>
+  </text>
+  <polyline points="700,192 700,1480" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="910" y="110" width="160" height="82" rx="18" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="990.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="990.0" dy="0">Telegram API</tspan>
+  </text>
+  <text x="990.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="990.0" dy="0">sendMessage</tspan>
+  </text>
+  <polyline points="990,192 990,1480" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="1160" y="110" width="160" height="82" rx="18" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="1240.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="1240.0" dy="0">Посетитель</tspan>
+  </text>
+  <text x="1240.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="1240.0" dy="0">Telegram UI</tspan>
+  </text>
+  <polyline points="1240,192 1240,1480" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="45" y="220" width="1310" height="355" rx="18" fill="#FFFFFF" fill-opacity="0.20" stroke="#94A3B8" stroke-width="1.4"/>
+  <rect x="45" y="220" width="420" height="30" rx="12" fill="#E2E8F0" stroke="#64748B" stroke-width="1.2"/>
+  <text x="60" y="241" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="60" dy="0">1. Bootstrap Bayeux-сессии</tspan>
+  </text>
+  <polyline points="180,275 692,275" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="299.96" y="232.0" width="280.08000000000004" height="46" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="440.0" y="248" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="440.0" dy="0">POST /meta/handshake</tspan>
+    <tspan x="440.0" dy="15">supportedConnectionTypes=[long-polling]</tspan>
+  </text>
+  <polyline points="700,345 188,345" stroke="#0F172A" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <rect x="293.24" y="302.0" width="293.52000000000004" height="46" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="440.0" y="318" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="440.0" dy="0">successful=true, clientId, BAYEUX_BROWSER</tspan>
+    <tspan x="440.0" dy="15">cookie</tspan>
+  </text>
+  <rect x="340" y="390" width="720" height="86" rx="14" fill="#FFFFFF" fill-opacity="0.28" stroke="#64748B" stroke-width="1.8"/>
+  <text x="700" y="418" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="700" dy="0">loop для каждого branch.prefix из ORCHESTRA_BRANCHES</tspan>
+  </text>
+  <text x="700" y="448" font-family="Arial, sans-serif" font-size="13" fill="#0F172A" font-weight="400" text-anchor="middle">
+    <tspan x="700" dy="0">/meta/subscribe → /events/{prefix}/QVoiceLight; затем publish /events/INIT с</tspan>
+    <tspan x="700" dy="16">uid={prefix}:QVoiceLight</tspan>
+  </text>
+  <polyline points="180,520 692,520" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="320.12" y="484.5" width="239.76000000000002" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="440.0" y="500" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="440.0" dy="0">subscribe + INIT for every prefix</tspan>
+  </text>
+  <rect x="45" y="610" width="1310" height="400" rx="18" fill="#FFFFFF" fill-opacity="0.20" stroke="#94A3B8" stroke-width="1.4"/>
+  <rect x="45" y="610" width="420" height="30" rx="12" fill="#E2E8F0" stroke="#64748B" stroke-width="1.2"/>
+  <text x="60" y="631" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="60" dy="0">2. Long-polling /meta/connect</tspan>
+  </text>
+  <polyline points="180,670 692,670" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="306.68" y="627.0" width="266.64" height="46" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="440.0" y="643" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="440.0" dy="0">POST /meta/connect</tspan>
+    <tspan x="440.0" dy="15">clientId, connectionType=long-polling</tspan>
+  </text>
+  <polyline points="700,745 188,745" stroke="#0F172A" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <rect x="350.36" y="702.0" width="179.28000000000003" height="46" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="440.0" y="718" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="440.0" dy="0">successful=true → update</tspan>
+    <tspan x="440.0" dy="15">last_connect_ok</tspan>
+  </text>
+  <rect x="320" y="780" width="760" height="130" rx="14" fill="#FFFFFF" fill-opacity="0.28" stroke="#64748B" stroke-width="1.8"/>
+  <text x="700" y="812" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="700" dy="0">alt response</tspan>
+  </text>
+  <text x="700" y="845" font-family="Arial, sans-serif" font-size="13" fill="#0F172A" font-weight="400" text-anchor="middle">
+    <tspan x="700" dy="0">1) /meta/connect OK: continue loop</tspan>
+    <tspan x="700" dy="22">2) reconnect advice / Unknown client: raise RuntimeError</tspan>
+    <tspan x="700" dy="22">3) application event: channel=/events/{prefix}/QVoiceLight</tspan>
+  </text>
+  <polyline points="700,950 188,950" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 5" marker-end="url(#arrow-blue)"/>
+  <rect x="350.36" y="914.5" width="179.28000000000003" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="440.0" y="930" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="440.0" dy="0">VISIT_CALL event payload</tspan>
+  </text>
+  <rect x="45" y="1045" width="1310" height="260" rx="18" fill="#FFFFFF" fill-opacity="0.20" stroke="#94A3B8" stroke-width="1.4"/>
+  <rect x="45" y="1045" width="420" height="30" rx="12" fill="#E2E8F0" stroke="#64748B" stroke-width="1.2"/>
+  <text x="60" y="1066" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="60" dy="0">3. Обработка VISIT_CALL</tspan>
+  </text>
+  <rect x="80" y="1100" width="260" height="85" rx="14" fill="#FFFFFF" fill-opacity="0.28" stroke="#64748B" stroke-width="1.8"/>
+  <text x="210" y="1128" font-family="Arial, sans-serif" font-size="13" fill="#0F172A" font-weight="400" text-anchor="middle">
+    <tspan x="210" dy="0">parse JSON</tspan>
+    <tspan x="210" dy="16">extract TelegramCustomerId</tspan>
+  </text>
+  <rect x="365" y="1100" width="300" height="85" rx="14" fill="#F0FDF4" fill-opacity="0.28" stroke="#16A34A" stroke-width="1.6"/>
+  <text x="515" y="1128" font-family="Arial, sans-serif" font-size="13" fill="#14532D" font-weight="400" text-anchor="middle">
+    <tspan x="515" dy="0">check chat_id → allowed prefixes</tspan>
+    <tspan x="515" dy="16">USER_BRANCH_SUBSCRIPTIONS</tspan>
+  </text>
+  <rect x="690" y="1100" width="260" height="85" rx="14" fill="#FFFFFF" fill-opacity="0.28" stroke="#64748B" stroke-width="1.8"/>
+  <text x="820" y="1128" font-family="Arial, sans-serif" font-size="13" fill="#0F172A" font-weight="400" text-anchor="middle">
+    <tspan x="820" dy="0">resolve BranchConfig</tspan>
+    <tspan x="820" dy="16">render template override</tspan>
+  </text>
+  <polyline points="180,1230 982,1230" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="478.56" y="1187.0" width="212.88000000000002" height="46" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="585.0" y="1203" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="585.0" dy="0">sendMessage(chat_id, rendered</tspan>
+    <tspan x="585.0" dy="15">text)</tspan>
+  </text>
+  <polyline points="990,1290 1232,1290" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="1038.8" y="1254.5" width="152.4" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="1115.0" y="1270" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="1115.0" dy="0">уведомление о вызове</tspan>
+  </text>
+  <rect x="45" y="1340" width="1310" height="170" rx="18" fill="#FFFFFF" fill-opacity="0.20" stroke="#94A3B8" stroke-width="1.4"/>
+  <rect x="45" y="1340" width="440" height="30" rx="12" fill="#E2E8F0" stroke="#64748B" stroke-width="1.2"/>
+  <text x="60" y="1361" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="60" dy="0">4. Восстановление после сбоя</tspan>
+  </text>
+  <polyline points="430,1395 188,1395" stroke="#0F172A" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="154.88" y="1344.5" width="300.24" height="61" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="305.0" y="1361" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="305.0" dy="0">check every 30 sec:</tspan>
+    <tspan x="305.0" dy="15">task.done() or stale last_connect_ok &gt; 120</tspan>
+    <tspan x="305.0" dy="15">sec</tspan>
+  </text>
+  <polyline points="430,1465 188,1465" stroke="#DC2626" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5" marker-end="url(#arrow-red)"/>
+  <rect x="175.04" y="1429.5" width="259.92" height="31" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="305.0" y="1445" font-family="Arial, sans-serif" font-size="12" fill="#DC2626" font-weight="500" text-anchor="middle">
+    <tspan x="305.0" dy="0">cancel old task + start new cometd()</tspan>
+  </text>
+  <rect x="560" y="1430" width="360" height="64" rx="14" fill="#FFFBEB" fill-opacity="0.28" stroke="#F59E0B" stroke-width="1.6"/>
+  <text x="740" y="1455" font-family="Arial, sans-serif" font-size="13" fill="#92400E" font-weight="400" text-anchor="middle">
+    <tspan x="740" dy="0">controlled reconnect: retry 2s → 4s → ... →</tspan>
+    <tspan x="740" dy="16">60s</tspan>
+  </text>
+</svg>

@@ -1,69 +1,60 @@
 @startuml
-title Telegram-бот регистрации визита в Qmatic Orchestra 6 — сетевой контур
-
+title Сетевая схема размещения Telegram-бота для Qmatic Orchestra 6
 !include style.iuml
-skinparam BackgroundColor #ffffff
-skinparam linetype ortho
-skinparam nodesep 70
-skinparam ranksep 90
-skinparam cloud {
-  BackgroundColor #f8fbff
-  BorderColor #5b8cc0
-}
-
 left to right direction
+skinparam nodesep 80
+skinparam ranksep 90
 
 actor "Посетитель\nTelegram-клиент" as Visitor
 
 cloud "Интернет" as Internet {
-  component "Telegram Bot API\napi.telegram.org:443" as TelegramApi
+  component "Telegram Bot API\napi.telegram.org:443" as TelegramApi <<external>>
 }
 
-node "Корпоративный / филиальный контур" as Corp {
-  node "DMZ / integration segment" as DMZ {
-    component "Telegram Orchestra Bot\nPython + aiogram\npolling + CometD client" as Bot
+node "Корпоративный / филиальный контур\nprivate LAN / DC / VPC" as Corp {
+  rectangle "APP zone" as AppZone {
+    component "Queue Telegram Bot\nPython container / VM\nбез входящего порта" as Bot <<bot>>
   }
 
-  node "Application segment" as App {
-    component "Qmatic Orchestra 6" as Orchestra
-    database "Orchestra DB" as OrchestraDb
+  rectangle "SERVICE zone" as ServiceZone {
+    component "Qmatic Orchestra 6\nREST API" as RestApi <<orchestra>>
+    component "Qmatic Orchestra 6\nCometD / Bayeux" as CometD <<orchestra>>
   }
 
-  component "DNS" as DNS
-  component "NTP" as NTP
-  component "Log collector\nstdout / journald / ELK" as Logs
+  rectangle "DATA zone" as DataZone {
+    database "Orchestra DB\nзакрыта от Интернета" as Db
+  }
+
+  rectangle "Infra / Ops" as OpsZone {
+    component "DNS" as Dns
+    component "NTP" as Ntp
+    component "Log collector\nstdout / journald / ELK" as Logs
+  }
 }
 
-' стабилизация расположения без дополнительных видимых связей
-DMZ -[hidden]-> App
-App -[hidden]-> DNS
-DNS -[hidden]-> NTP
-NTP -[hidden]-> Logs
+Visitor --> TelegramApi : 1. сообщения боту
+Bot --> TelegramApi : 2. HTTPS 443 outbound\ngetUpdates / sendMessage
+Bot --> RestApi : 3. REST outbound\nGET services / POST visits
+Bot --> CometD : 4. CometD outbound\nhandshake / subscribe / connect
+RestApi --> Db : 5. read/write visits, services
+CometD --> Db : 6. publish VISIT_CALL context
+Bot --> Dns : 7. DNS lookup
+Bot --> Ntp : 8. time sync
+Bot --> Logs : 9. application logs
 
-Visitor --> TelegramApi : сообщения боту
-Bot --> TelegramApi : HTTPS 443\ngetUpdates/sendMessage\nисходящее соединение
-
-Bot --> Orchestra : REST API\nGET services\nPOST visits
-Bot --> Orchestra : CometD /cometd\nhandshake/subscribe/connect\nlong-polling
-
-Orchestra --> OrchestraDb : чтение/запись визитов
-Bot --> DNS : DNS lookup
-Bot --> NTP : time sync
-Bot --> Logs : stdout logs
+Internet -[#DC2626,dashed]-> Bot : DENY ingress
+Internet -[#DC2626,dashed]-> RestApi : DENY public access
+Internet -[#DC2626,dashed]-> Db : DENY public DB access
 
 legend bottom center
-|= № |= Соединение |
-| 1 | Посетитель -> Telegram Bot API: сообщения боту |
-| 2 | Bot -> Telegram Bot API: outbound HTTPS 443 (getUpdates/sendMessage) |
-| 3 | Bot -> Orchestra REST API: GET services, POST visits |
-| 4 | Bot -> Orchestra CometD: /cometd, handshake/subscribe/connect (long-polling) |
-| 5 | Orchestra -> DB: чтение/запись визитов, услуги, VISIT_CALL |
-| 6 | Bot -> DNS: разрешение имен |
-| 7 | Bot -> NTP: синхронизация времени |
-| 8 | Bot -> Log collector: stdout / journald / ELK |
-
-Входящий порт из интернета не нужен:
-бот работает через polling, а не через webhook.
+|= № |= Разрешённый поток |= Назначение |
+| 1 | Visitor -> Telegram Bot API | пользовательские команды и callbacks |
+| 2 | Bot -> Telegram API: TCP/443 | polling + отправка сообщений |
+| 3 | Bot -> Orchestra REST | получение услуг и создание визита |
+| 4 | Bot -> Orchestra CometD | подписка на VISIT_CALL по prefix филиала |
+| 5-6 | Orchestra -> DB | чтение/запись бизнес-данных и событий |
+| 7-9 | Bot -> DNS/NTP/Logs | инфраструктурные исходящие подключения |
+--
+Входящий порт из Интернета для бота не нужен: используется polling, не webhook.
 endlegend
-
 @enduml

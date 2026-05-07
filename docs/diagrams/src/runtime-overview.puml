@@ -1,0 +1,59 @@
+@startuml
+title Компонентная схема runtime: Telegram Bot ↔ Qmatic Orchestra 6
+!include style.iuml
+left to right direction
+skinparam nodesep 70
+skinparam ranksep 70
+
+actor "Посетитель\nTelegram-клиент" as Visitor
+cloud "Telegram Cloud" as TelegramCloud {
+  component "Telegram Bot API\napi.telegram.org:443" as TelegramApi <<external>>
+}
+
+node "Queue Telegram Bot\nmain_bot.py" as BotNode {
+  rectangle "Конфигурация\n.env / environment" as Env <<config>>
+  component "Aiogram dispatcher\n/start, callbacks, FSM" as Aiogram <<bot>>
+  component "BranchConfig loader\nORCHESTRA_BRANCHES + fallback" as BranchLoader <<bot>>
+  component "Service menu builder\nGET services + blacklist" as ServiceMenu <<bot>>
+  component "Visit creator\nPOST entryPoints/{id}/visits" as VisitCreator <<bot>>
+  component "CometD client\nhandshake / subscribe / INIT / connect" as CometDClient <<bot>>
+  component "CometD watchdog\nrestart + exponential backoff" as Watchdog <<bot>>
+  component "Visit message renderer\nVISIT_CALL_TEMPLATE + override" as MessageRenderer <<bot>>
+  queue "USER_BRANCH_SUBSCRIPTIONS\nchat_id -> allowed branch prefixes" as UserBranchMap
+}
+
+node "Qmatic Orchestra 6" as OrchestraNode {
+  component "REST API\n/services, /visits" as RestApi <<orchestra>>
+  component "CometD endpoint\n/cometd, /events/{prefix}/QVoiceLight" as CometDEndpoint <<orchestra>>
+  database "Orchestra DB\nvisits, services, queues" as Db
+}
+
+Env --> BranchLoader : branches, prefixes, entryPointId, templates
+BranchLoader --> Aiogram : branch menu / fallback mode
+Aiogram --> ServiceMenu : выбран branchId
+ServiceMenu --> RestApi : GET services
+Aiogram --> VisitCreator : selected branch + service
+VisitCreator --> RestApi : POST visit + TelegramCustomerId
+VisitCreator --> UserBranchMap : store chat_id -> branch prefix
+
+CometDClient --> CometDEndpoint : subscribe by all prefixes
+CometDEndpoint --> CometDClient : VISIT_CALL event
+CometDClient --> UserBranchMap : validate allowed prefix
+CometDClient --> MessageRenderer : render branch/global template
+MessageRenderer --> TelegramApi : sendMessage(chat_id, text)
+Watchdog ..> CometDClient : restart if crashed / no connect
+
+Visitor --> TelegramApi : commands / callbacks
+TelegramApi --> Aiogram : polling updates
+Aiogram --> TelegramApi : menus / ticket number
+RestApi --> Db : read/write
+CometDEndpoint --> Db : event source
+
+legend bottom center
+|= Зона |= Компоненты |
+| Runtime | main_bot.py: polling, FSM, REST calls, CometD, watchdog |
+| Конфигурация | branch_config.py: multi-branch JSON + single-branch fallback |
+| Уведомления | visit_message.py: safe template rendering for VISIT_CALL |
+| Интеграция | Orchestra REST + CometD events, Telegram Bot API |
+endlegend
+@enduml

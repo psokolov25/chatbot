@@ -1,1 +1,247 @@
-<?plantuml 1.2026.1?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" data-diagram-type="SEQUENCE" height="1198px" preserveAspectRatio="none" style="width:1461px;height:1198px;background:#FFFFFF;" version="1.1" viewBox="0 0 1461 1198" width="1461px" zoomAndPan="magnify"><title>&#1056;&#1077;&#1075;&#1080;&#1089;&#1090;&#1088;&#1072;&#1094;&#1080;&#1103; &#1074;&#1080;&#1079;&#1080;&#1090;&#1072; &#1080; &#1091;&#1074;&#1077;&#1076;&#1086;&#1084;&#1083;&#1077;&#1085;&#1080;&#1077; &#1086; &#1074;&#1099;&#1079;&#1086;&#1074;&#1077;</title><defs/><g><text fill="#000000" font-family="Arial" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="366.1123" x="543.4504" y="27.9951">&#1056;&#1077;&#1075;&#1080;&#1089;&#1090;&#1088;&#1072;&#1094;&#1080;&#1103; &#1074;&#1080;&#1079;&#1080;&#1090;&#1072; &#1080; &#1091;&#1074;&#1077;&#1076;&#1086;&#1084;&#1083;&#1077;&#1085;&#1080;&#1077; &#1086; &#1074;&#1099;&#1079;&#1086;&#1074;&#1077;</text><g class="participant-lifeline" data-entity-uid="part1" data-qualified-name="User" id="part1-lifeline"><g><title>..........</title><rect fill="#000000" fill-opacity="0.00000" height="998.7813" width="8" x="47.3125" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="51" x2="51" y1="118.5938" y2="1117.375"/></g></g><g class="participant-lifeline" data-entity-uid="part2" data-qualified-name="Telegram" id="part2-lifeline"><g><title>Telegram Bot API</title><rect fill="#000000" fill-opacity="0.00000" height="998.7813" width="8" x="240.6934" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="244.0757" x2="244.0757" y1="118.5938" y2="1117.375"/></g></g><g class="participant-lifeline" data-entity-uid="part3" data-qualified-name="Bot" id="part3-lifeline"><g><title>Telegram Orchestra Bot</title><rect fill="#000000" fill-opacity="0.00000" height="998.7813" width="8" x="463.394" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="467.312" x2="467.312" y1="118.5938" y2="1117.375"/></g></g><g class="participant-lifeline" data-entity-uid="part4" data-qualified-name="Rest" id="part4-lifeline"><g><title>Qmatic Orchestra 6</title><rect fill="#000000" fill-opacity="0.00000" height="998.7813" width="8" x="990.5347" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="993.936" x2="993.936" y1="118.5938" y2="1117.375"/></g></g><g class="participant-lifeline" data-entity-uid="part5" data-qualified-name="CometD" id="part5-lifeline"><g><title>Qmatic Orchestra 6</title><rect fill="#000000" fill-opacity="0.00000" height="998.7813" width="8" x="1151.7319" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="1155.1333" x2="1155.1333" y1="118.5938" y2="1117.375"/></g></g><g class="participant-lifeline" data-entity-uid="part6" data-qualified-name="Operator" id="part6-lifeline"><g><title>........ . ....... .....</title><rect fill="#000000" fill-opacity="0.00000" height="998.7813" width="8" x="1341.1719" y="118.5938"/><line style="stroke:#181818;stroke-width:0.5;stroke-dasharray:5,5;" x1="1344.3306" x2="1344.3306" y1="118.5938" y2="1117.375"/></g></g><g class="participant participant-head" data-entity-uid="part1" data-qualified-name="User" id="part1-head"><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="86.625" x="5" y="115.292">&#1055;&#1086;&#1089;&#1077;&#1090;&#1080;&#1090;&#1077;&#1083;&#1100;</text><ellipse cx="51.3125" cy="50.7969" fill="#E2E2F0" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M51.3125,58.7969 L51.3125,85.7969 M38.3125,66.7969 L64.3125,66.7969 M51.3125,85.7969 L38.3125,100.7969 M51.3125,85.7969 L64.3125,100.7969" fill="none" style="stroke:#181818;stroke-width:0.5;"/></g><g class="participant participant-tail" data-entity-uid="part1" data-qualified-name="User" id="part1-tail"><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="86.625" x="5" y="1129.3701">&#1055;&#1086;&#1089;&#1077;&#1090;&#1080;&#1090;&#1077;&#1083;&#1100;</text><ellipse cx="51.3125" cy="1141.1719" fill="#E2E2F0" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/><path d="M51.3125,1149.1719 L51.3125,1176.1719 M38.3125,1157.1719 L64.3125,1157.1719 M51.3125,1176.1719 L38.3125,1191.1719 M51.3125,1176.1719 L64.3125,1191.1719" fill="none" style="stroke:#181818;stroke-width:0.5;"/></g><g class="participant participant-head" data-entity-uid="part2" data-qualified-name="Telegram" id="part2-head"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="135.2354" x="177.0757" y="87.2969"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="121.2354" x="184.0757" y="107.292">Telegram Bot API</text></g><g class="participant participant-tail" data-entity-uid="part2" data-qualified-name="Telegram" id="part2-tail"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="135.2354" x="177.0757" y="1116.375"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="121.2354" x="184.0757" y="1136.3701">Telegram Bot API</text></g><g class="participant participant-head" data-entity-uid="part3" data-qualified-name="Bot" id="part3-head"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="182.1641" x="376.312" y="87.2969"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="168.1641" x="383.312" y="107.292">Telegram Orchestra Bot</text></g><g class="participant participant-tail" data-entity-uid="part3" data-qualified-name="Bot" id="part3-tail"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="182.1641" x="376.312" y="1116.375"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="168.1641" x="383.312" y="1136.3701">Telegram Orchestra Bot</text></g><g class="participant participant-head" data-entity-uid="part4" data-qualified-name="Rest" id="part4-head"><rect fill="#FFFFFF" height="46.5938" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="151.1973" x="918.936" y="71"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="137.1973" x="925.936" y="90.9951">Qmatic Orchestra 6</text><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="62.6104" x="963.2295" y="107.292">REST API</text></g><g class="participant participant-tail" data-entity-uid="part4" data-qualified-name="Rest" id="part4-tail"><rect fill="#FFFFFF" height="46.5938" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="151.1973" x="918.936" y="1116.375"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="137.1973" x="925.936" y="1136.3701">Qmatic Orchestra 6</text><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="62.6104" x="963.2295" y="1152.667">REST API</text></g><g class="participant participant-head" data-entity-uid="part5" data-qualified-name="CometD" id="part5-head"><rect fill="#FFFFFF" height="46.5938" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="151.1973" x="1080.1333" y="71"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="137.1973" x="1087.1333" y="90.9951">Qmatic Orchestra 6</text><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="117.6465" x="1096.9087" y="107.292">CometD / events</text></g><g class="participant participant-tail" data-entity-uid="part5" data-qualified-name="CometD" id="part5-tail"><rect fill="#FFFFFF" height="46.5938" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="151.1973" x="1080.1333" y="1116.375"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="137.1973" x="1087.1333" y="1136.3701">Qmatic Orchestra 6</text><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="117.6465" x="1096.9087" y="1152.667">CometD / events</text></g><g class="participant participant-head" data-entity-uid="part6" data-qualified-name="Operator" id="part6-head"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="207.6826" x="1241.3306" y="87.2969"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="193.6826" x="1248.3306" y="107.292">&#1054;&#1087;&#1077;&#1088;&#1072;&#1090;&#1086;&#1088; / &#1088;&#1072;&#1073;&#1086;&#1095;&#1077;&#1077; &#1084;&#1077;&#1089;&#1090;&#1086;</text></g><g class="participant participant-tail" data-entity-uid="part6" data-qualified-name="Operator" id="part6-tail"><rect fill="#FFFFFF" height="30.2969" rx="2.5" ry="2.5" style="stroke:#333333;stroke-width:0.5;" width="207.6826" x="1241.3306" y="1116.375"/><text fill="#000000" font-family="Arial" font-size="14" lengthAdjust="spacing" textLength="193.6826" x="1248.3306" y="1136.3701">&#1054;&#1087;&#1077;&#1088;&#1072;&#1090;&#1086;&#1088; / &#1088;&#1072;&#1073;&#1086;&#1095;&#1077;&#1077; &#1084;&#1077;&#1089;&#1090;&#1086;</text></g><rect fill="#EEEEEE" height="3" style="stroke:#EEEEEE;stroke-width:1;" width="1454.0132" x="0" y="149.1602"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="1454.0132" y1="149.1602" y2="149.1602"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="1454.0132" y1="152.1602" y2="152.1602"/><rect fill="#EEEEEE" height="23.1328" style="stroke:#000000;stroke-width:2;" width="175.9033" x="639.0549" y="138.5938"/><text fill="#000000" font-family="Arial" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="157.3774" x="645.0549" y="154.6606">&#1048;&#1085;&#1080;&#1094;&#1080;&#1072;&#1083;&#1080;&#1079;&#1072;&#1094;&#1080;&#1103; &#1073;&#1086;&#1090;&#1072;</text><g class="message" data-entity-1="part3" data-entity-2="part2" id="msg1"><polygon fill="#181818" points="255.6934,188.8594,245.6934,192.8594,255.6934,196.8594,251.6934,192.8594" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="249.6934" x2="466.394" y1="192.8594" y2="192.8594"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="77.9429" x="317.0723" y="187.7935">start polling</text></g><g class="message" data-entity-1="part3" data-entity-2="part5" id="msg2"><polygon fill="#181818" points="1143.7319,217.9922,1153.7319,221.9922,1143.7319,225.9922,1147.7319,221.9922" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="467.394" x2="1149.7319" y1="221.9922" y2="221.9922"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="113.6865" x="754.7197" y="216.9263">/meta/handshake</text></g><g class="message" data-entity-1="part5" data-entity-2="part3" id="msg3"><polygon fill="#181818" points="478.394,247.125,468.394,251.125,478.394,255.125,474.394,251.125" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="472.394" x2="1154.7319" y1="251.125" y2="251.125"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="47.7915" x="787.6672" y="246.0591">clientId</text></g><g class="message" data-entity-1="part3" data-entity-2="part5" id="msg4"><polygon fill="#181818" points="1143.7319,291.3906,1153.7319,295.3906,1143.7319,299.3906,1147.7319,295.3906" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="467.394" x2="1149.7319" y1="295.3906" y2="295.3906"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="104.876" x="759.125" y="275.1919">/meta/subscribe</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="230.2295" x="696.4482" y="290.3247">/events/{branchCode}/QVoiceLight</text></g><g class="message" data-entity-1="part5" data-entity-2="part3" id="msg5"><polygon fill="#181818" points="478.394,320.5234,468.394,324.5234,478.394,328.5234,474.394,324.5234" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="472.394" x2="1154.7319" y1="324.5234" y2="324.5234"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="133.8022" x="744.6619" y="319.4575">subscribe successful</text></g><g class="message" data-entity-1="part3" data-entity-2="part5" id="msg6"><polygon fill="#181818" points="1143.7319,379.9219,1153.7319,383.9219,1143.7319,387.9219,1147.7319,383.9219" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="467.394" x2="1149.7319" y1="383.9219" y2="383.9219"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="76.4448" x="773.3406" y="348.5903">publish INIT</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="77.8921" x="772.6169" y="363.7231">/events/INIT</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="208.6665" x="707.2297" y="378.856">uid={branchCode}:QVoiceLight</text></g><g class="message" data-entity-1="part3" data-entity-2="part5" id="msg7"><polygon fill="#181818" points="1143.7319,409.0547,1153.7319,413.0547,1143.7319,417.0547,1147.7319,413.0547" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="467.394" x2="1149.7319" y1="413.0547" y2="413.0547"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="206.6226" x="708.2517" y="407.9888">/meta/connect long-polling loop</text></g><rect fill="#EEEEEE" height="3" style="stroke:#EEEEEE;stroke-width:1;" width="1454.0132" x="0" y="441.6211"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="1454.0132" y1="441.6211" y2="441.6211"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="1454.0132" y1="444.6211" y2="444.6211"/><rect fill="#EEEEEE" height="23.1328" style="stroke:#000000;stroke-width:2;" width="168.0132" x="643" y="431.0547"/><text fill="#000000" font-family="Arial" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="149.4873" x="649" y="447.1216">&#1056;&#1077;&#1075;&#1080;&#1089;&#1090;&#1088;&#1072;&#1094;&#1080;&#1103; &#1074;&#1080;&#1079;&#1080;&#1090;&#1072;</text><g class="message" data-entity-1="part1" data-entity-2="part2" id="msg8"><polygon fill="#181818" points="232.6934,481.3203,242.6934,485.3203,232.6934,489.3203,236.6934,485.3203" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="51.3125" x2="238.6934" y1="485.3203" y2="485.3203"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="34.6582" x="130.6738" y="480.2544">/start</text></g><g class="message" data-entity-1="part2" data-entity-2="part3" id="msg9"><polygon fill="#181818" points="455.394,510.4531,465.394,514.4531,455.394,518.4531,459.394,514.4531" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="244.6934" x2="461.394" y1="514.4531" y2="514.4531"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="84.5952" x="313.7461" y="509.3872">update /start</text></g><g class="message" data-entity-1="part3" data-entity-2="part2" id="msg10"><polygon fill="#181818" points="255.6934,554.7188,245.6934,558.7188,255.6934,562.7188,251.6934,558.7188" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="249.6934" x2="466.394" y1="558.7188" y2="558.7188"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="147.8242" x="282.1316" y="538.52">"&#1042;&#1099;&#1073;&#1077;&#1088;&#1080;&#1090;&#1077; &#1076;&#1077;&#1081;&#1089;&#1090;&#1074;&#1080;&#1077;"</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="93.4629" x="309.3123" y="553.6528">[&#1042;&#1079;&#1103;&#1090;&#1100; &#1090;&#1072;&#1083;&#1086;&#1085;]</text></g><g class="message" data-entity-1="part1" data-entity-2="part2" id="msg11"><polygon fill="#181818" points="232.6934,583.8516,242.6934,587.8516,232.6934,591.8516,236.6934,587.8516" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="51.3125" x2="238.6934" y1="587.8516" y2="587.8516"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="169.3809" x="63.3125" y="582.7856">&#1085;&#1072;&#1078;&#1080;&#1084;&#1072;&#1077;&#1090; "&#1042;&#1079;&#1103;&#1090;&#1100; &#1090;&#1072;&#1083;&#1086;&#1085;"</text></g><g class="message" data-entity-1="part2" data-entity-2="part3" id="msg12"><polygon fill="#181818" points="455.394,612.9844,465.394,616.9844,455.394,620.9844,459.394,616.9844" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="244.6934" x2="461.394" y1="616.9844" y2="616.9844"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="127.1245" x="292.4814" y="611.9185">callback take-ticket</text></g><g class="message" data-entity-1="part3" data-entity-2="part4" id="msg13"><polygon fill="#181818" points="982.5347,642.1172,992.5347,646.1172,982.5347,650.1172,986.5347,646.1172" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="467.394" x2="988.5347" y1="646.1172" y2="646.1172"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="348.6895" x="556.6196" y="641.0513">GET /rest/servicepoint/branches/{branchId}/services/</text></g><g class="message" data-entity-1="part4" data-entity-2="part3" id="msg14"><polygon fill="#181818" points="478.394,671.25,468.394,675.25,478.394,679.25,474.394,675.25" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="472.394" x2="993.5347" y1="675.25" y2="675.25"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="88.8545" x="686.5371" y="670.1841">&#1089;&#1087;&#1080;&#1089;&#1086;&#1082; &#1091;&#1089;&#1083;&#1091;&#1075;</text></g><g class="message" data-entity-1="part3" data-entity-2="part2" id="msg15"><polygon fill="#181818" points="255.6934,700.3828,245.6934,704.3828,255.6934,708.3828,251.6934,704.3828" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="249.6934" x2="466.394" y1="704.3828" y2="704.3828"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="161.4971" x="275.2952" y="699.3169">inline-&#1082;&#1083;&#1072;&#1074;&#1080;&#1072;&#1090;&#1091;&#1088;&#1072; &#1091;&#1089;&#1083;&#1091;&#1075;</text></g><g class="message" data-entity-1="part1" data-entity-2="part2" id="msg16"><polygon fill="#181818" points="232.6934,729.5156,242.6934,733.5156,232.6934,737.5156,236.6934,733.5156" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="51.3125" x2="238.6934" y1="733.5156" y2="733.5156"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="115.6797" x="90.1631" y="728.4497">&#1074;&#1099;&#1073;&#1080;&#1088;&#1072;&#1077;&#1090; &#1091;&#1089;&#1083;&#1091;&#1075;&#1091;</text></g><g class="message" data-entity-1="part2" data-entity-2="part3" id="msg17"><polygon fill="#181818" points="455.394,758.6484,465.394,762.6484,455.394,766.6484,459.394,762.6484" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="244.6934" x2="461.394" y1="762.6484" y2="762.6484"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="116.0161" x="298.0356" y="757.5825">callback serviceId</text></g><g class="message" data-entity-1="part3" data-entity-2="part4" id="msg18"><polygon fill="#181818" points="982.5347,818.0469,992.5347,822.0469,982.5347,826.0469,986.5347,822.0469" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="467.394" x2="988.5347" y1="822.0469" y2="822.0469"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="503.1406" x="479.394" y="786.7153">POST /rest/entrypoint/branches/{branchId}/entryPoints/{entryPointId}/visits/</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="133.0278" x="664.4504" y="801.8481">services=[serviceId]</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="216.5439" x="622.6924" y="816.981">parameters.TelegramCustomerId</text></g><g class="message" data-entity-1="part4" data-entity-2="part3" id="msg19"><polygon fill="#181818" points="478.394,847.1797,468.394,851.1797,478.394,855.1797,474.394,851.1797" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="472.394" x2="993.5347" y1="851.1797" y2="851.1797"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="179.0674" x="641.4307" y="846.1138">&#1089;&#1086;&#1079;&#1076;&#1072;&#1085;&#1085;&#1099;&#1081; &#1074;&#1080;&#1079;&#1080;&#1090; / ticketId</text></g><g class="message" data-entity-1="part3" data-entity-2="part2" id="msg20"><polygon fill="#181818" points="255.6934,876.3125,245.6934,880.3125,255.6934,884.3125,251.6934,880.3125" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="249.6934" x2="466.394" y1="880.3125" y2="880.3125"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="158.793" x="276.6472" y="875.2466">"&#1042;&#1072;&#1096; &#1090;&#1072;&#1083;&#1086;&#1085;: {ticketId}"</text></g><rect fill="#EEEEEE" height="3" style="stroke:#EEEEEE;stroke-width:1;" width="1454.0132" x="0" y="908.8789"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="1454.0132" y1="908.8789" y2="908.8789"/><line style="stroke:#000000;stroke-width:1;" x1="0" x2="1454.0132" y1="911.8789" y2="911.8789"/><rect fill="#EEEEEE" height="23.1328" style="stroke:#000000;stroke-width:2;" width="154.7275" x="649.6428" y="898.3125"/><text fill="#000000" font-family="Arial" font-size="13" font-weight="bold" lengthAdjust="spacing" textLength="136.2017" x="655.6428" y="914.3794">&#1042;&#1099;&#1079;&#1086;&#1074; &#1087;&#1086;&#1089;&#1077;&#1090;&#1080;&#1090;&#1077;&#1083;&#1103;</text><g class="message" data-entity-1="part6" data-entity-2="part4" id="msg21"><polygon fill="#181818" points="1005.5347,948.5781,995.5347,952.5781,1005.5347,956.5781,1001.5347,952.5781" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="999.5347" x2="1344.1719" y1="952.5781" y2="952.5781"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="213.6748" x="1063.0159" y="947.5122">&#1074;&#1099;&#1079;&#1099;&#1074;&#1072;&#1077;&#1090; &#1074;&#1080;&#1079;&#1080;&#1090; &#1082; &#1089;&#1087;&#1077;&#1094;&#1080;&#1072;&#1083;&#1080;&#1089;&#1090;&#1091;</text></g><g class="message" data-entity-1="part4" data-entity-2="part5" id="msg22"><polygon fill="#181818" points="1143.7319,977.7109,1153.7319,981.7109,1143.7319,985.7109,1147.7319,981.7109" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="994.5347" x2="1149.7319" y1="981.7109" y2="981.7109"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="133.2437" x="1008.5115" y="976.645">&#1089;&#1086;&#1073;&#1099;&#1090;&#1080;&#1077; VISIT_CALL</text></g><g class="message" data-entity-1="part5" data-entity-2="part3" id="msg23"><polygon fill="#181818" points="478.394,1021.9766,468.394,1025.9766,478.394,1029.9766,474.394,1025.9766" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;stroke-dasharray:2,2;" x1="472.394" x2="1154.7319" y1="1025.9766" y2="1025.9766"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="112.8677" x="755.1292" y="1005.7778">event VISIT_CALL</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="167.4004" x="727.8628" y="1020.9106">prm.TelegramCustomerId</text></g><g class="message" data-entity-1="part3" data-entity-2="part2" id="msg24"><polygon fill="#181818" points="255.6934,1066.2422,245.6934,1070.2422,255.6934,1074.2422,251.6934,1070.2422" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="249.6934" x2="466.394" y1="1070.2422" y2="1070.2422"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="88.2388" x="311.9243" y="1050.0435">sendMessage</text><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="198.7007" x="256.6934" y="1065.1763">"&#1042;&#1099; &#1074;&#1099;&#1079;&#1074;&#1072;&#1085;&#1099; &#1082; &#1089;&#1087;&#1077;&#1094;&#1080;&#1072;&#1083;&#1080;&#1089;&#1090;&#1091;"</text></g><g class="message" data-entity-1="part2" data-entity-2="part1" id="msg25"><polygon fill="#181818" points="62.3125,1095.375,52.3125,1099.375,62.3125,1103.375,58.3125,1099.375" style="stroke:#181818;stroke-width:1;"/><line style="stroke:#181818;stroke-width:1;" x1="56.3125" x2="243.6934" y1="1099.375" y2="1099.375"/><text fill="#000000" font-family="Arial" font-size="13" lengthAdjust="spacing" textLength="91.3555" x="102.3252" y="1094.3091">&#1091;&#1074;&#1077;&#1076;&#1086;&#1084;&#1083;&#1077;&#1085;&#1080;&#1077;</text></g><?plantuml-src ZLNBRjD05DtxAqPX7Rn0OX4fI2Ky5AdGGWCicWfDx6aogZCEdd4HgYhHLWAa8bNgYXNm2UaZz9dm2-C_uimuTjmc0IgbdhaFttlFFVTQSHKmed_gWJxHvybEifjyrFta4yu7H1_hSts6uwxk4trEaZr81lfKZ_Irli9f2Fs0w14iatrOZepUSUG65pqQqIwH7Ug7xxbeatKQI5RKi7Sn4nvxngIaRROGyBOW7XEAHGKhdwtJE51FGg6UqouZ2n6dGK6F_ufxl4U58biE8G-fjz6EmbZujJ088_AcmnKpyZ3oMPJAxjopVywsur1FGL3IF_GesT43r6bg7UYhv6k9K4bUIMHJZ55gi82rJUI7eI8BotLhbWddc2v5NeT95L7ZP1tml6dxeajnALZURugNZrSQUOYN4F_RfHPscNf4NC8sWQIqdgdifg_-hd-ZNDFfNPJ-4Hxceezm-OpwqTDhw7UCrhvagSSY2gmSfreb-fjflE48NAuiHNB6c3SOjbIhZcCWAZ_8qI4L8XMo8Bqm2429J3zEka9SFAdReS87RJQOCrQKOMDCAyGBECgg-tCyPToINiHRh2dS501tgnLHuNLgeS-stHUlG-wnHTxkgEbtvyuuUHv8kHu7Kt5wSIlWiaFgp-kDIP3q5dE_MWnNAOQRdR0N2i4yHO9GjCjZL709UodC_p6K1cP3qbiuknPe9vVaLSOzdogMwQSRLDA76EGZomqx2WJJFj0NbWecyA3K5AlwK9yb1yZgAp5PW0CZFLoRbGY8qjU_u7UD9-RB19ZXMvgHgaU3e8Ln9WfSA8Ex6qpbd3BZ09kdZnl4ZN1s4NeJQFT2BfIRTe7bxQ_xsvc1T1thEsay1l-t0HbvN6B3uN25FNSo0nmkq21MrfT8kc_HmFZ00xqfEix4uTZ2UcwdpE0miK_s_bRyE6rm_bRfoqihMUqWOVHXVkLMlMpK44ykHhN99OUqAJ9qggjvmBLckcCPDhAycwLOYwK2YICaD8tZ2BmyHO53FKIv5mMgOi6a7PmCxqtM0Sel1K9Ko5PclrrAf-4m-y8GzElskZwmav1jgG9CwOS9l-Cny8MSJBztx2BCLvcTjRrnQOLvjSKT9Vic98RYTNsbtdXRMrXSd5uaTYaKB01Zr9s5tupro8G__XusXHt5xCDgiX-QwxoKRqwGPM1bplVQ-GC0?></g></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="2100" viewBox="0 0 1500 2100" role="img" aria-label="Регистрация визита и адресное уведомление VISIT_CALL">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#0F172A"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#DC2626"/>
+    </marker>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0F172A" flood-opacity="0.10"/>
+    </filter>
+    <linearGradient id="titleGradient" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <rect x="24" y="24" width="1452" height="2052" rx="28" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="750.0" y="62" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="url(#titleGradient)" text-anchor="middle">Регистрация визита и адресное уведомление VISIT_CALL</text>
+  <rect x="40" y="110" width="160" height="82" rx="18" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="120.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="120.0" dy="0">Посетитель</tspan>
+  </text>
+  <text x="120.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="120.0" dy="0">Telegram UI</tspan>
+  </text>
+  <polyline points="120,192 120,2000" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="250" y="110" width="160" height="82" rx="18" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="330.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="330.0" dy="0">Telegram API</tspan>
+  </text>
+  <text x="330.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="330.0" dy="0">updates/messages</tspan>
+  </text>
+  <polyline points="330,192 330,2000" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="480" y="110" width="160" height="82" rx="18" fill="#ECFDF5" stroke="#0D9488" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="560.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="560.0" dy="0">Bot / Aiogram</tspan>
+  </text>
+  <text x="560.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="560.0" dy="0">main_bot.py</tspan>
+  </text>
+  <polyline points="560,192 560,2000" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="710" y="110" width="160" height="82" rx="18" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="790.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="790.0" dy="0">BranchConfig</tspan>
+  </text>
+  <text x="790.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="790.0" dy="0">env → branches</tspan>
+  </text>
+  <polyline points="790,192 790,2000" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="930" y="110" width="160" height="82" rx="18" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="1010.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="1010.0" dy="0">REST API</tspan>
+  </text>
+  <text x="1010.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="1010.0" dy="0">Orchestra</tspan>
+  </text>
+  <polyline points="1010,192 1010,2000" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="1150" y="110" width="160" height="82" rx="18" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="1230.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="1230.0" dy="0">CometD events</tspan>
+  </text>
+  <text x="1230.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="1230.0" dy="0">Orchestra</tspan>
+  </text>
+  <polyline points="1230,192 1230,2000" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="1320" y="110" width="160" height="82" rx="18" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="1400.0" y="138" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="1400.0" dy="0">Оператор</tspan>
+  </text>
+  <text x="1400.0" y="168" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="1400.0" dy="0">рабочее место</tspan>
+  </text>
+  <polyline points="1400,192 1400,2000" stroke="#334155" stroke-width="2.9" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="9 6"/>
+  <rect x="45" y="220" width="1410" height="250" rx="18" fill="#FFFFFF" fill-opacity="0.20" stroke="#94A3B8" stroke-width="1.4"/>
+  <rect x="45" y="220" width="420" height="30" rx="12" fill="#E2E8F0" stroke="#64748B" stroke-width="1.2"/>
+  <text x="60" y="241" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="60" dy="0">1. Старт runtime</tspan>
+  </text>
+  <polyline points="560,270 782,270" stroke="#0F172A" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="582.0" y="227.0" width="186.00000000000003" height="46" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="675.0" y="243" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="675.0" dy="0">load ORCHESTRA_BRANCHES /</tspan>
+    <tspan x="675.0" dy="15">fallback</tspan>
+  </text>
+  <polyline points="790,330 568,330" stroke="#0F172A" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <rect x="555.12" y="287.0" width="239.76000000000002" height="46" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="675.0" y="303" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="675.0" dy="0">BranchConfig[]: id, name, prefix,</tspan>
+    <tspan x="675.0" dy="15">entryPointId</tspan>
+  </text>
+  <polyline points="560,390 338,390" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="378.88" y="347.0" width="132.24" height="46" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="445.0" y="363" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="445.0" dy="0">start polling,</tspan>
+    <tspan x="445.0" dy="15">skip_updates=True</tspan>
+  </text>
+  <polyline points="560,450 1222,450" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="728.0799999999999" y="407.0" width="333.84000000000003" height="46" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="895.0" y="423" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="895.0" dy="0">background CometD task: handshake / subscribe /</tspan>
+    <tspan x="895.0" dy="15">INIT / connect</tspan>
+  </text>
+  <rect x="45" y="510" width="1410" height="440" rx="18" fill="#FFFFFF" fill-opacity="0.20" stroke="#94A3B8" stroke-width="1.4"/>
+  <rect x="45" y="510" width="420" height="30" rx="12" fill="#E2E8F0" stroke="#64748B" stroke-width="1.2"/>
+  <text x="60" y="531" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="60" dy="0">2. Выбор отделения и услуги</tspan>
+  </text>
+  <polyline points="120,565 322,565" stroke="#0F172A" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="195.84" y="529.5" width="58.32000000000001" height="31" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="225.0" y="545" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="225.0" dy="0">/start</tspan>
+  </text>
+  <polyline points="330,625 552,625" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="392.32" y="589.5" width="105.36000000000001" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="445.0" y="605" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="445.0" dy="0">update /start</tspan>
+  </text>
+  <polyline points="560,685 338,685" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="355.36" y="649.5" width="179.28000000000003" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="445.0" y="665" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="445.0" dy="0">main menu: [Взять талон]</tspan>
+  </text>
+  <polyline points="120,745 322,745" stroke="#0F172A" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="148.8" y="709.5" width="152.4" height="31" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="225.0" y="725" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="225.0" dy="0">callback take-ticket</tspan>
+  </text>
+  <polyline points="330,805 552,805" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="385.6" y="769.5" width="118.80000000000001" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="445.0" y="785" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="445.0" dy="0">selected action</tspan>
+  </text>
+  <rect x="370" y="842" width="420" height="74" rx="14" fill="#FFFFFF" fill-opacity="0.28" stroke="#64748B" stroke-width="1.8"/>
+  <text x="580" y="872" font-family="Arial, sans-serif" font-size="13" fill="#0F172A" font-weight="400" text-anchor="middle">
+    <tspan x="580" dy="0">single branch: выбрать автоматически</tspan>
+    <tspan x="580" dy="16">multi-branch: показать keyboard отделений</tspan>
+  </text>
+  <polyline points="560,955 1002,955" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="631.0" y="912.0" width="308" height="46" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="785.0" y="928" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="785.0" dy="0">GET</tspan>
+    <tspan x="785.0" dy="15">/rest/servicepoint/branches/{branchId}/services/</tspan>
+  </text>
+  <polyline points="1010,1015 568,1015" stroke="#0F172A" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <rect x="742.4" y="979.5" width="85.2" height="31" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="785.0" y="995" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="785.0" dy="0">services[]</tspan>
+  </text>
+  <rect x="430" y="1038" width="260" height="56" rx="14" fill="#FFFFFF" fill-opacity="0.28" stroke="#64748B" stroke-width="1.8"/>
+  <text x="560" y="1062" font-family="Arial, sans-serif" font-size="13" fill="#0F172A" font-weight="400" text-anchor="middle">
+    <tspan x="560" dy="0">filter SERVICE_BLACKLIST</tspan>
+    <tspan x="560" dy="16">build services keyboard</tspan>
+  </text>
+  <polyline points="560,1125 338,1125" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="352.0" y="1089.5" width="186.00000000000003" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="445.0" y="1105" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="445.0" dy="0">inline keyboard: services</tspan>
+  </text>
+  <rect x="45" y="1170" width="1410" height="410" rx="18" fill="#FFFFFF" fill-opacity="0.20" stroke="#94A3B8" stroke-width="1.4"/>
+  <rect x="45" y="1170" width="420" height="30" rx="12" fill="#E2E8F0" stroke="#64748B" stroke-width="1.2"/>
+  <text x="60" y="1191" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="60" dy="0">3. Создание визита</tspan>
+  </text>
+  <polyline points="120,1225 322,1225" stroke="#0F172A" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="155.51999999999998" y="1189.5" width="138.96" height="31" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="225.0" y="1205" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="225.0" dy="0">callback serviceId</tspan>
+  </text>
+  <polyline points="330,1285 552,1285" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="375.52" y="1249.5" width="138.96" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="445.0" y="1265" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="445.0" dy="0">selected serviceId</tspan>
+  </text>
+  <polyline points="560,1345 1002,1345" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="596.0" y="1294.5" width="378" height="61" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="785.0" y="1311" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="785.0" dy="0">POST</tspan>
+    <tspan x="785.0" dy="15">/entrypoint/branches/{branchId}/entryPoints/{entryPointId}/visits</tspan>
+    <tspan x="785.0" dy="15">+ TelegramCustomerId</tspan>
+  </text>
+  <polyline points="1010,1405 568,1405" stroke="#0F172A" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <rect x="698.72" y="1369.5" width="172.56" height="31" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="785.0" y="1385" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="785.0" dy="0">visit.ticketId / ticket</tspan>
+  </text>
+  <rect x="410" y="1438" width="300" height="58" rx="14" fill="#F0FDF4" fill-opacity="0.28" stroke="#16A34A" stroke-width="1.6"/>
+  <text x="560" y="1463" font-family="Arial, sans-serif" font-size="13" fill="#14532D" font-weight="400" text-anchor="middle">
+    <tspan x="560" dy="0">save chat_id → branch prefix</tspan>
+    <tspan x="560" dy="16">USER_BRANCH_SUBSCRIPTIONS</tspan>
+  </text>
+  <polyline points="560,1515 338,1515" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="372.15999999999997" y="1479.5" width="145.68" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="445.0" y="1495" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="445.0" dy="0">Ваш талон: {ticket}</tspan>
+  </text>
+  <polyline points="330,1575 128,1575" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="175.68" y="1539.5" width="98.64000000000001" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="225.0" y="1555" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="225.0" dy="0">номер талона</tspan>
+  </text>
+  <rect x="45" y="1625" width="1410" height="350" rx="18" fill="#FFFFFF" fill-opacity="0.20" stroke="#94A3B8" stroke-width="1.4"/>
+  <rect x="45" y="1625" width="420" height="30" rx="12" fill="#E2E8F0" stroke="#64748B" stroke-width="1.2"/>
+  <text x="60" y="1646" font-family="Arial, sans-serif" font-size="14" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="60" dy="0">4. Вызов посетителя</tspan>
+  </text>
+  <polyline points="1400,1685 1018,1685" stroke="#0F172A" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="1118.72" y="1649.5" width="172.56" height="31" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="1205.0" y="1665" font-family="Arial, sans-serif" font-size="12" fill="#0F172A" font-weight="500" text-anchor="middle">
+    <tspan x="1205.0" dy="0">оператор вызывает визит</tspan>
+  </text>
+  <polyline points="1010,1745 1222,1745" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="1050.52" y="1709.5" width="138.96" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="1120.0" y="1725" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="1120.0" dy="0">publish VISIT_CALL</tspan>
+  </text>
+  <polyline points="1230,1805 568,1805" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 5" marker-end="url(#arrow-blue)"/>
+  <rect x="724.72" y="1762.0" width="340.56000000000006" height="46" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="895.0" y="1778" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="895.0" dy="0">/events/{prefix}/QVoiceLight, E.evnt=VISIT_CALL,</tspan>
+    <tspan x="895.0" dy="15">prm.TelegramCustomerId</tspan>
+  </text>
+  <rect x="410" y="1830" width="300" height="74" rx="14" fill="#FFFFFF" fill-opacity="0.28" stroke="#64748B" stroke-width="1.8"/>
+  <text x="560" y="1858" font-family="Arial, sans-serif" font-size="13" fill="#0F172A" font-weight="400" text-anchor="middle">
+    <tspan x="560" dy="0">validate chat_id + branch prefix</tspan>
+    <tspan x="560" dy="16">render template / override</tspan>
+  </text>
+  <polyline points="560,1930 338,1930" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="316.0" y="1894.5" width="258" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="445.0" y="1910" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="445.0" dy="0">sendMessage(chat_id=TelegramCustomerId)</tspan>
+  </text>
+  <polyline points="330,1990 128,1990" stroke="#2563EB" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <rect x="135.35999999999999" y="1954.5" width="179.28000000000003" height="31" rx="8" fill="#EFF6FF" stroke="#94A3B8" stroke-width="1.4"/>
+  <text x="225.0" y="1970" font-family="Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="500" text-anchor="middle">
+    <tspan x="225.0" dy="0">персональное уведомление</tspan>
+  </text>
+  <rect x="70" y="2030" width="1360" height="44" rx="18" fill="#FFFFFF" stroke="#64748B" stroke-width="1.8"/>
+  <text x="750" y="2058" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="750" dy="0">Ключевой результат: визит создаётся в entryPoint выбранного филиала, а VISIT_CALL отправляется только владельцу TelegramCustomerId.</tspan>
+  </text>
+</svg>

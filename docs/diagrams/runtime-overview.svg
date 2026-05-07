@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980" role="img" aria-label="Компонентная схема runtime: Telegram Bot ↔ Qmatic Orchestra 6">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#DC2626"/>
+    </marker>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0F172A" flood-opacity="0.10"/>
+    </filter>
+    <linearGradient id="titleGradient" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <rect x="24" y="24" width="1452" height="932" rx="28" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="750.0" y="62" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="url(#titleGradient)" text-anchor="middle">Компонентная схема runtime: Telegram Bot ↔ Qmatic Orchestra 6</text>
+  <rect x="60" y="125" width="310" height="260" rx="24" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="2"/>
+  <text x="78" y="155" font-family="Arial, sans-serif" font-size="16" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="78" dy="0">Внешний контур</tspan>
+  </text>
+  <rect x="95" y="210" width="110" height="82" rx="18" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="150.0" y="238" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="150.0" dy="0">Посетитель</tspan>
+  </text>
+  <text x="150.0" y="268" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="150.0" dy="0">Telegram UI</tspan>
+  </text>
+  <rect x="235" y="200" width="110" height="102" rx="18" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="290.0" y="228" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="290.0" dy="0">Telegram</tspan>
+    <tspan x="290.0" dy="19">Bot API</tspan>
+  </text>
+  <text x="290.0" y="258" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="290.0" dy="0">api.telegram.org</tspan>
+    <tspan x="290.0" dy="16">TCP/443</tspan>
+  </text>
+  <rect x="430" y="125" width="660" height="705" rx="24" fill="#ECFDF5" stroke="#99F6E4" stroke-width="2"/>
+  <text x="448" y="155" font-family="Arial, sans-serif" font-size="16" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="448" dy="0">Queue Telegram Bot — main_bot.py</tspan>
+  </text>
+  <rect x="470" y="190" width="270" height="94" rx="18" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="605.0" y="218" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="605.0" dy="0">Configuration layer</tspan>
+  </text>
+  <text x="605.0" y="248" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="605.0" dy="0">branch_config.py</tspan>
+    <tspan x="605.0" dy="16">ORCHESTRA_BRANCHES + fallback</tspan>
+  </text>
+  <rect x="790" y="190" width="250" height="94" rx="18" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="915.0" y="218" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="915.0" dy="0">Runtime state</tspan>
+  </text>
+  <text x="915.0" y="248" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="915.0" dy="0">FSM MemoryStorage</tspan>
+    <tspan x="915.0" dy="16">USER_BRANCH_SUBSCRIPTIONS</tspan>
+  </text>
+  <rect x="470" y="345" width="250" height="94" rx="18" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="595.0" y="373" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="595.0" dy="0">Telegram interaction</tspan>
+  </text>
+  <text x="595.0" y="403" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="595.0" dy="0">Aiogram dispatcher</tspan>
+    <tspan x="595.0" dy="16">/start + callbacks</tspan>
+  </text>
+  <rect x="470" y="505" width="250" height="94" rx="18" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="595.0" y="533" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="595.0" dy="0">REST workflow</tspan>
+  </text>
+  <text x="595.0" y="563" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="595.0" dy="0">services menu</tspan>
+    <tspan x="595.0" dy="16">visit creator</tspan>
+  </text>
+  <rect x="790" y="345" width="250" height="94" rx="18" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="915.0" y="373" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="915.0" dy="0">CometD workflow</tspan>
+  </text>
+  <text x="915.0" y="403" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="915.0" dy="0">handshake / subscribe / INIT</tspan>
+    <tspan x="915.0" dy="16">long-polling connect</tspan>
+  </text>
+  <rect x="790" y="505" width="250" height="94" rx="18" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="915.0" y="533" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="915.0" dy="0">Notification workflow</tspan>
+  </text>
+  <text x="915.0" y="563" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="915.0" dy="0">VISIT_CALL validation</tspan>
+    <tspan x="915.0" dy="16">template rendering</tspan>
+  </text>
+  <rect x="630" y="680" width="270" height="80" rx="18" fill="#FFFFFF" stroke="#64748B" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="765.0" y="708" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="765.0" dy="0">CometD watchdog</tspan>
+  </text>
+  <text x="765.0" y="738" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="765.0" dy="0">restart on crash / stale connect</tspan>
+    <tspan x="765.0" dy="16">backoff 2s → 60s</tspan>
+  </text>
+  <rect x="1150" y="125" width="290" height="505" rx="24" fill="#EFF6FF" stroke="#93C5FD" stroke-width="2"/>
+  <text x="1168" y="155" font-family="Arial, sans-serif" font-size="16" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="1168" dy="0">Qmatic Orchestra 6</tspan>
+  </text>
+  <rect x="1195" y="220" width="100" height="88" rx="18" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="1245.0" y="248" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="1245.0" dy="0">REST API</tspan>
+  </text>
+  <text x="1245.0" y="278" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="1245.0" dy="0">/services</tspan>
+    <tspan x="1245.0" dy="16">/visits</tspan>
+  </text>
+  <rect x="1310" y="220" width="100" height="88" rx="18" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="1360.0" y="248" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="1360.0" dy="0">CometD</tspan>
+  </text>
+  <text x="1360.0" y="278" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="1360.0" dy="0">/cometd</tspan>
+    <tspan x="1360.0" dy="16">/events</tspan>
+  </text>
+  <rect x="1225" y="465" width="140" height="82" rx="18" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.6" filter="url(#cardShadow)"/>
+  <text x="1295.0" y="493" font-family="Arial, sans-serif" font-size="15" fill="#0F172A" font-weight="700" text-anchor="middle">
+    <tspan x="1295.0" dy="0">Orchestra DB</tspan>
+  </text>
+  <text x="1295.0" y="523" font-family="Arial, sans-serif" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">
+    <tspan x="1295.0" dy="0">visits,</tspan>
+    <tspan x="1295.0" dy="16">services,</tspan>
+    <tspan x="1295.0" dy="16">events</tspan>
+  </text>
+  <polyline points="205,251 235,251" stroke="#2563EB" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <circle cx="220" cy="225" r="13" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+  <text x="220" y="230" font-family="Arial, sans-serif" font-size="12" fill="#1D4ED8" font-weight="700" text-anchor="middle">
+    <tspan x="220" dy="0">1</tspan>
+  </text>
+  <polyline points="345,251 410,251 410,392 470,392" stroke="#2563EB" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <circle cx="405" cy="318" r="13" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+  <text x="405" y="323" font-family="Arial, sans-serif" font-size="12" fill="#1D4ED8" font-weight="700" text-anchor="middle">
+    <tspan x="405" dy="0">2</tspan>
+  </text>
+  <polyline points="720,552 1195,265" stroke="#2563EB" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <circle cx="940" cy="455" r="13" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+  <text x="940" y="460" font-family="Arial, sans-serif" font-size="12" fill="#1D4ED8" font-weight="700" text-anchor="middle">
+    <tspan x="940" dy="0">3</tspan>
+  </text>
+  <polyline points="1040,392 1310,265" stroke="#2563EB" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <circle cx="1120" cy="340" r="13" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+  <text x="1120" y="345" font-family="Arial, sans-serif" font-size="12" fill="#1D4ED8" font-weight="700" text-anchor="middle">
+    <tspan x="1120" dy="0">4</tspan>
+  </text>
+  <polyline points="1310,285 1090,285 1090,392 1040,392" stroke="#2563EB" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow-blue)"/>
+  <circle cx="1160" cy="285" r="13" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+  <text x="1160" y="290" font-family="Arial, sans-serif" font-size="12" fill="#1D4ED8" font-weight="700" text-anchor="middle">
+    <tspan x="1160" dy="0">5</tspan>
+  </text>
+  <polyline points="790,552 345,285" stroke="#2563EB" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+  <circle cx="590" cy="625" r="13" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+  <text x="590" y="630" font-family="Arial, sans-serif" font-size="12" fill="#1D4ED8" font-weight="700" text-anchor="middle">
+    <tspan x="590" dy="0">6</tspan>
+  </text>
+  <polyline points="1245,308 1280,465" stroke="#334155" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <circle cx="1260" cy="390" r="13" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+  <text x="1260" y="395" font-family="Arial, sans-serif" font-size="12" fill="#334155" font-weight="700" text-anchor="middle">
+    <tspan x="1260" dy="0">7</tspan>
+  </text>
+  <polyline points="1360,308 1320,465" stroke="#334155" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <circle cx="1340" cy="390" r="13" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5"/>
+  <text x="1340" y="395" font-family="Arial, sans-serif" font-size="12" fill="#334155" font-weight="700" text-anchor="middle">
+    <tspan x="1340" dy="0">8</tspan>
+  </text>
+  <polyline points="740,237 790,237" stroke="#334155" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="735.84" y="196.5" width="58.32000000000001" height="31" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="765" y="212" font-family="Arial, sans-serif" font-size="12" fill="#334155" font-weight="500" text-anchor="middle">
+    <tspan x="765" dy="0">config</tspan>
+  </text>
+  <polyline points="790,392 720,392" stroke="#334155" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+  <rect x="698.96" y="349.5" width="112.08000000000001" height="31" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="755" y="365" font-family="Arial, sans-serif" font-size="12" fill="#334155" font-weight="500" text-anchor="middle">
+    <tspan x="755" dy="0">branch / state</tspan>
+  </text>
+  <polyline points="915,680 915,599" stroke="#334155" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <rect x="917.24" y="629.5" width="125.52000000000001" height="31" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="980" y="645" font-family="Arial, sans-serif" font-size="12" fill="#334155" font-weight="500" text-anchor="middle">
+    <tspan x="980" dy="0">watchdog restart</tspan>
+  </text>
+  <rect x="80" y="665" width="455" height="205" rx="24" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+  <text x="98" y="695" font-family="Arial, sans-serif" font-size="16" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="98" dy="0">Нумерация потоков</tspan>
+  </text>
+  <text x="110" y="710" font-family="Arial, sans-serif" font-size="14" fill="#334155" font-weight="400" text-anchor="start">
+    <tspan x="110" dy="0">1  Команды пользователя в Telegram</tspan>
+    <tspan x="110" dy="21">2  Polling updates в Aiogram</tspan>
+    <tspan x="110" dy="21">3  REST: услуги и создание визита</tspan>
+    <tspan x="110" dy="21">4  CometD subscribe/connect по prefix</tspan>
+    <tspan x="110" dy="21">5  VISIT_CALL из канала филиала</tspan>
+    <tspan x="110" dy="21">6  sendMessage(chat_id=TelegramCustomerId)</tspan>
+    <tspan x="110" dy="21">7–8  Orchestra читает/пишет данные и события</tspan>
+  </text>
+  <rect x="1115" y="670" width="325" height="165" rx="24" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+  <text x="1133" y="700" font-family="Arial, sans-serif" font-size="16" fill="#0F172A" font-weight="700" text-anchor="start">
+    <tspan x="1133" dy="0">Ключевые свойства</tspan>
+  </text>
+  <text x="1145" y="715" font-family="Arial, sans-serif" font-size="14" fill="#334155" font-weight="400" text-anchor="start">
+    <tspan x="1145" dy="0">• входящий порт бота не нужен</tspan>
+    <tspan x="1145" dy="24">• entryPointId берётся из</tspan>
+    <tspan x="1145" dy="24">BranchConfig</tspan>
+    <tspan x="1145" dy="24">• уведомление коррелируется по</tspan>
+    <tspan x="1145" dy="24">chat_id и prefix</tspan>
+  </text>
+</svg>

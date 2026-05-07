@@ -1,68 +1,69 @@
 @startuml
-title Регистрация визита и уведомление о вызове
-
+title Регистрация визита в Telegram и адресное уведомление при VISIT_CALL
 !include style.iuml
-skinparam sequenceMessageAlign center
-skinparam sequence {
-  GroupBorderColor #7aa6d8
-  GroupBackgroundColor #f8fbff
-  GroupHeaderFontColor #1f4e79
-}
+hide footbox
+autonumber "<b>[00]"
 
 actor "Посетитель" as User
+box "Telegram" #F8FAFC
 participant "Telegram Bot API" as Telegram
-participant "Telegram Orchestra Bot" as Bot
-participant "Qmatic Orchestra 6\nREST API" as Rest
-participant "Qmatic Orchestra 6\nCometD / events" as CometD
+end box
+box "Queue Telegram Bot" #F0FDFA
+participant "Aiogram dispatcher\nmain_bot.py" as Bot
+participant "branch_config.py\nBranchConfig" as Config
+end box
+box "Qmatic Orchestra 6" #EFF6FF
+participant "REST API" as Rest
+participant "CometD events" as CometD
 participant "Оператор / рабочее место" as Operator
+end box
 
-== Инициализация бота ==
+== Старт runtime ==
+Bot -> Config : load ORCHESTRA_BRANCHES\nили fallback BRANCH_ID
+Config --> Bot : branches: id, name, prefix, entryPointId
+Bot -> Telegram : start polling\nskip_updates=True
+Bot -> CometD : background task\nhandshake / subscribe / INIT / connect
 
-Bot -> Telegram : start polling
-Bot -> CometD : /meta/handshake
-CometD --> Bot : clientId
-Bot -> CometD : /meta/subscribe\n/events/{branchCode}/QVoiceLight
-CometD --> Bot : subscribe successful
-Bot -> CometD : publish INIT\n/events/INIT\nuid={branchCode}:QVoiceLight
-Bot -> CometD : /meta/connect long-polling loop
-
-== Регистрация визита ==
-
+== Выбор отделения и услуги ==
 User -> Telegram : /start
 Telegram -> Bot : update /start
 Bot -> Telegram : "Выберите действие"\n[Взять талон]
-User -> Telegram : нажимает "Взять талон"
-Telegram -> Bot : callback take-ticket
-
+User -> Telegram : callback take-ticket
+Telegram -> Bot : callback data=take-ticket
+alt один филиал
+  Bot -> Bot : select single branch automatically
+else несколько филиалов
+  Bot -> Telegram : inline keyboard: branches
+  User -> Telegram : callback branch:{branchId}
+  Telegram -> Bot : selected branchId
+end
 Bot -> Rest : GET /rest/servicepoint/branches/{branchId}/services/
-Rest --> Bot : список услуг
-Bot -> Telegram : inline-клавиатура услуг
+Rest --> Bot : services[]
+Bot -> Bot : filter SERVICE_BLACKLIST
+Bot -> Telegram : inline keyboard: services
 
-User -> Telegram : выбирает услугу
-Telegram -> Bot : callback serviceId
-
-Bot -> Rest : POST /rest/entrypoint/branches/{branchId}/entryPoints/{entryPointId}/visits/\nservices=[serviceId]\nparameters.TelegramCustomerId
-Rest --> Bot : созданный визит / ticketId
-Bot -> Telegram : "Ваш талон: {ticketId}"
+== Создание визита ==
+User -> Telegram : callback serviceId
+Telegram -> Bot : selected serviceId
+Bot -> Rest : POST /rest/entrypoint/branches/{branchId}\n/entryPoints/{entryPointId}/visits/\nservices=[serviceId]\nparameters.TelegramCustomerId\nparameters.TelegramCustomerFullName
+Rest --> Bot : visit: ticketId / ticket
+Bot -> Bot : USER_BRANCH_SUBSCRIPTIONS\nchat_id -> branch prefix
+Bot -> Telegram : "Ваш талон: {ticket}"
+Telegram -> User : номер талона
 
 == Вызов посетителя ==
-
-Operator -> Rest : вызывает визит к специалисту
+Operator -> Rest : вызвать визит к специалисту
 Rest -> CometD : событие VISIT_CALL
-CometD --> Bot : event VISIT_CALL\nprm.TelegramCustomerId
-Bot -> Telegram : sendMessage\n"Вы вызваны к специалисту"
-Telegram -> User : уведомление
+CometD --> Bot : /events/{prefix}/QVoiceLight\nE.evnt=VISIT_CALL\nprm.TelegramCustomerId
+Bot -> Bot : verify chat_id and branch prefix\nrender branch/global template
+Bot -> Telegram : sendMessage(chat_id=TelegramCustomerId)
+Telegram -> User : персональное уведомление о вызове
 
-legend bottom
-Условные обозначения:
-- Сплошная стрелка (->): исходящий запрос / команда
-- Пунктирная стрелка (-->) : ответ / асинхронное событие
-- Блоки "== ... ==" : логические этапы сценария
---
-Ключевые точки:
-1) Получение услуг: GET /services
-2) Создание визита: POST /visits + parameters.TelegramCustomerId
-3) Уведомление о вызове: VISIT_CALL -> sendMessage
+legend bottom center
+|= Контрольная точка |= Что проверяет диаграмма |
+| Branch selection | Multi-branch меню или single-branch fallback |
+| Visit creation | entryPointId берётся из BranchConfig, не жёстко из кода |
+| Correlation | chat_id сохраняется через TelegramCustomerId и prefix филиала |
+| Notification | VISIT_CALL отправляется только целевому пользователю |
 endlegend
-
 @enduml

@@ -1,45 +1,58 @@
 @startuml
-title CometD-подписка и доставка VISIT_CALL в Telegram
-
+title CometD lifecycle: подписка, long-polling, VISIT_CALL и восстановление
 !include style.iuml
-skinparam sequenceMessageAlign center
-skinparam sequence {
-  GroupBorderColor #7aa6d8
-  GroupBackgroundColor #f8fbff
-  GroupHeaderFontColor #1f4e79
-}
+hide footbox
+autonumber "<b>[00]"
 
-participant "Telegram Orchestra Bot" as Bot
-participant "Qmatic Orchestra 6\nCometD / events" as CometD
+participant "Queue Bot\nmain_bot.py" as Bot
+participant "CometD watchdog" as Watchdog
+participant "Orchestra CometD\n/cometd" as CometD
 participant "Telegram Bot API" as Telegram
 actor "Посетитель" as User
 
-== Поднятие CometD-сессии ==
-
-Bot -> CometD : /meta/handshake
-CometD --> Bot : clientId + cookie
-Bot -> CometD : /meta/subscribe\n/events/{prefix}/QVoiceLight\n(для каждого филиала)
-Bot -> CometD : publish INIT\n/events/INIT\nuid={prefix}:QVoiceLight
-
-loop long-polling connect loop
-  Bot -> CometD : /meta/connect
-  CometD --> Bot : meta/events
+== Bootstrap сессии ==
+Bot -> CometD : POST /meta/handshake\nsupportedConnectionTypes=[long-polling]
+CometD --> Bot : successful=true\nclientId + BAYEUX_BROWSER cookie
+loop для каждого branch.prefix из ORCHESTRA_BRANCHES
+  Bot -> CometD : POST /meta/subscribe\nsubscription=/events/{prefix}/QVoiceLight
+  CometD --> Bot : subscribe successful
+  Bot -> CometD : publish /events/INIT\nuid={prefix}:QVoiceLight\ntype=67, encoding=QP_JSON
 end
 
-== Обработка события вызова ==
+== Long-polling цикл ==
+loop постоянно, timeout до 90 секунд
+  Bot -> CometD : POST /meta/connect\nclientId, connectionType=long-polling
+  alt successful /meta/connect
+    CometD --> Bot : successful=true\nlast_connect_ok updated
+  else reconnect advice / unknown client
+    CometD --> Bot : error / advice=reconnect:handshake
+    Bot -> Bot : raise RuntimeError\ncontrolled reconnect
+  else прикладное событие
+    CometD --> Bot : channel=/events/{prefix}/QVoiceLight\ndata.E.evnt=VISIT_CALL
+  end
+end
 
-CometD --> Bot : VISIT_CALL\nprm.TelegramCustomerId
-Bot -> Bot : валидация филиала и шаблона\nVISIT_CALL_TEMPLATE / per-branch override
-Bot -> Telegram : sendMessage(chat_id=TelegramCustomerId)
-Telegram --> User : уведомление о вызове
+== Обработка VISIT_CALL ==
+Bot -> Bot : parse data JSON\nextract E.prm.TelegramCustomerId
+Bot -> Bot : check USER_BRANCH_SUBSCRIPTIONS\nchat_id -> allowed prefixes
+Bot -> Bot : resolve BranchConfig by prefix\nchoose branch template or default
+Bot -> Telegram : sendMessage(chat_id, rendered text)
+Telegram -> User : уведомление о вызове
 
-legend bottom
-Условные обозначения:
-- /meta/handshake: старт Bayeux-сессии и получение clientId
-- /meta/subscribe: подписка на канал филиала /events/{prefix}/QVoiceLight
-- loop: непрерывный long-polling через /meta/connect
-- VISIT_CALL: событие вызова посетителя
-- prm.TelegramCustomerId: chat_id для адресной отправки в Telegram
+== Восстановление после сбоя ==
+Watchdog -> Bot : каждые 30 секунд\ncheck task.done() / stale last_connect_ok
+alt задача упала или нет /meta/connect > 120 секунд
+  Watchdog -> Bot : cancel old CometD task
+  Watchdog -> Bot : start new cometd() task
+else сессия сама в reconnect/backoff
+  Bot -> Bot : retry 2s -> 4s -> ... -> 60s
+end
+
+legend bottom center
+|= Механизм |= Назначение |
+| BAYEUX_BROWSER | cookie CometD/Bayeux-сессии после handshake |
+| /events/{prefix}/QVoiceLight | филиальный канал событий вызова посетителя |
+| /events/INIT | регистрация клиента QVoiceLight для выбранного prefix |
+| watchdog | защита от зависания long-polling и тихой смерти сессии |
 endlegend
-
 @enduml
