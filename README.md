@@ -54,6 +54,8 @@
 | `SERVICE_BLACKLIST` | Услуги, скрытые в меню (через запятую) | `Оплата услуг` |
 | `VISIT_CALL_TEMPLATE` | Общий шаблон текста вызова посетителя для всех филиалов | `Уважаемый клиент! ...` |
 | `ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES` | JSON-объект переопределений шаблона по `branchId` или `prefix` | пусто |
+| `ORCHESTRA_MULTI_SERVICE_ENABLED` | Включить множественный выбор услуг для всех отделений (`true/false`) | `false` |
+| `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED` | JSON-объект переопределений для отделений по `branchId` или `prefix` | пусто |
 
 Шаблоны поддерживают плейсхолдеры Python `str.format` из полей `prm` события `VISIT_CALL`, например:
 - `{ticketId}`, `{ticket}`, `{servicePointId}`, `{servicePointName}`, `{branchName}`, `{waitingTime}`, `{TelegramCustomerFullName}`.
@@ -70,15 +72,46 @@ ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES={"6":"Нотариус: талон {ticket
 
 ---
 
-### 1.5 Пример `.env` для нескольких филиалов
+
+### 1.5 Множественный выбор услуг
+
+Можно включить выбор нескольких услуг при создании одного визита:
+
+```env
+# глобально для всех отделений
+ORCHESTRA_MULTI_SERVICE_ENABLED=true
+
+# точечно для отделений (перекрывает глобальное значение)
+ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED={"6":true,"SVR":false}
+```
+
+Логика приоритета:
+- если для отделения найдено значение в `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED`, используется оно;
+- иначе используется `ORCHESTRA_MULTI_SERVICE_ENABLED`;
+- если оба параметра отсутствуют, множественный выбор выключен.
+
+В Telegram при включении режима можно отметить несколько услуг и нажать кнопку «Подтвердить выбор».
+
+---
+
+### 1.6 Пример `.env` для нескольких филиалов
 
 ```env
 API_TOKEN=...
 ORCHESTRA_URL=http://127.0.0.1:8080/
 ORCHESTRA_LOGIN=superadmin
 ORCHESTRA_PASSWORD=ulan
-ORCHESTRA_BRANCHES=[{"id":6,"name":"Центральное отделение","prefix":"NTR","entry_point_id":2},{"id":7,"name":"Северное отделение","prefix":"SVR","entry_point_id":3}]
+ORCHESTRA_BRANCHES=[{"id":6,"name":"Центральное отделение","prefix":"NTR","entry_point_id":2},{"id":7,"name":"Северное отделение","prefix":"SVR","entry_point_id":3},{"id":8,"name":"Южное отделение","prefix":"UG","entry_point_id":4}]
 SERVICE_BLACKLIST=Оплата услуг
+
+# Простой вариант: мультисервис включен везде
+ORCHESTRA_MULTI_SERVICE_ENABLED=true
+
+# Вариант для разных отделений (перекрывает глобальный флаг)
+# Центральное (id=6) - включено
+# Северное (prefix=SVR) - выключено
+# Южное (id=8) - включено
+ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED={"6":true,"SVR":false,"8":true}
 ```
 
 Если `ORCHESTRA_BRANCHES` задан, бот полностью работает в многофилиальном режиме и fallback-переменные (`BRANCH_ID`, `ORCHESTRA_ENTRY_POINT_ID`, `ORCHESTRA_BRANCH_CODE`) не используются.
