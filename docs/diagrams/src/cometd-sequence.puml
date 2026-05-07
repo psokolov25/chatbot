@@ -1,12 +1,12 @@
 @startuml
 title CometD-подписка и доставка VISIT_CALL в Telegram
 
-skinparam shadowing false
+!include style.iuml
 skinparam sequenceMessageAlign center
-skinparam defaultFontName Arial
-skinparam participant {
-  BackgroundColor White
-  BorderColor #333333
+skinparam sequence {
+  GroupBorderColor #7aa6d8
+  GroupBackgroundColor #f8fbff
+  GroupHeaderFontColor #1f4e79
 }
 
 participant "Telegram Orchestra Bot" as Bot
@@ -32,5 +32,14 @@ CometD --> Bot : VISIT_CALL\nprm.TelegramCustomerId
 Bot -> Bot : валидация филиала и шаблона\nVISIT_CALL_TEMPLATE / per-branch override
 Bot -> Telegram : sendMessage(chat_id=TelegramCustomerId)
 Telegram --> User : уведомление о вызове
+
+legend bottom
+Условные обозначения:
+- /meta/handshake: старт Bayeux-сессии и получение clientId
+- /meta/subscribe: подписка на канал филиала /events/{prefix}/QVoiceLight
+- loop: непрерывный long-polling через /meta/connect
+- VISIT_CALL: событие вызова посетителя
+- prm.TelegramCustomerId: chat_id для адресной отправки в Telegram
+endlegend
 
 @enduml

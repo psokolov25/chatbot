@@ -1,0 +1,56 @@
+' Shared visual style for network + sequence diagrams
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam dpi 160
+skinparam BackgroundColor #ffffff
+skinparam linetype ortho
+skinparam RoundCorner 14
+
+skinparam title {
+  FontSize 22
+  FontColor #1f2937
+}
+
+skinparam Legend {
+  BackgroundColor #f8fbff
+  BorderColor #7aa6d8
+  FontColor #1f4e79
+}
+
+skinparam Note {
+  BackgroundColor #feffdd
+  BorderColor #d4aa3a
+}
+
+skinparam Arrow {
+  Color #404040
+  FontColor #222222
+  FontSize 12
+}
+
+skinparam participant {
+  BackgroundColor #f4f6f8
+  BorderColor #7b8794
+  FontColor #1f2937
+}
+
+skinparam actor {
+  BorderColor #4a5568
+  FontColor #1f2937
+}
+
+skinparam rectangle {
+  BorderColor #5b8cc0
+  FontColor #1f2937
+}
+
+skinparam node {
+  BorderColor #5b8cc0
+  FontColor #1f2937
+}
+
+skinparam component {
+  BackgroundColor #f3f4f6
+  BorderColor #888
+  FontColor #1f2937
+}
