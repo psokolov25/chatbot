@@ -12,6 +12,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from branch_config import BranchConfig, parse_branches
+from visit_message import render_visit_call_message
 
 # Логирование в stdout (Docker friendly)
 logging.basicConfig(
@@ -38,6 +39,10 @@ SERVICE_BLACKLIST = {
     if name.strip()
 }
 logging.info("Service blacklist: %s", SERVICE_BLACKLIST)
+DEFAULT_VISIT_CALL_TEMPLATE = os.getenv(
+    "VISIT_CALL_TEMPLATE",
+    "Уважаемый клиент! Вы вызваны к специалисту. Обратите внимание на ТВ-панель. Заранее спасибо!",
+)
 
 
 def load_branches() -> List[BranchConfig]:
@@ -47,12 +52,15 @@ def load_branches() -> List[BranchConfig]:
         default_branch_name=os.getenv("ORCHESTRA_BRANCH_NAME", "Основное отделение"),
         default_branch_code=ORCHESTRA_BRANCH_CODE,
         default_entry_point_id=ORCHESTRA_ENTRY_POINT_ID,
+        default_visit_call_template=DEFAULT_VISIT_CALL_TEMPLATE,
+        branch_visit_call_templates_raw=os.getenv("ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES", ""),
     )
 
 
 BRANCHES = load_branches()
 BRANCH_MAP: Dict[int, BranchConfig] = {b.branch_id: b for b in BRANCHES}
 USER_BRANCH_SUBSCRIPTIONS: Dict[int, Set[str]] = {}
+
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -249,6 +257,7 @@ async def run_cometd_session(bot: Bot, cometd_url: str, channel_subscribe_list: 
                     event_type = E.get("evnt")
 
                     if event_type == "VISIT_CALL":
+                        event_context = E
                         prm = E.get("prm", {})
                         chat_id = prm.get("TelegramCustomerId")
                         if chat_id:
@@ -260,10 +269,18 @@ async def run_cometd_session(bot: Bot, cometd_url: str, channel_subscribe_list: 
                             allowed_prefixes = USER_BRANCH_SUBSCRIPTIONS.get(chat_id_int, set())
                             if branch_prefix and allowed_prefixes and branch_prefix not in allowed_prefixes:
                                 continue
+                            branch = next((b for b in BRANCHES if b.prefix == branch_prefix), None)
+                            if not branch:
+                                continue
                             try:
                                 await bot.send_message(
                                     chat_id_int,
-                                    "Уважаемый клиент! Вы вызваны к специалисту. Обратите внимание на ТВ-панель. Заранее спасибо!"
+                                    render_visit_call_message(
+                                        branch.visit_call_template,
+                                        DEFAULT_VISIT_CALL_TEMPLATE,
+                                        prm,
+                                        event_context,
+                                    ),
                                 )
                             except:
                                 logging.exception("Telegram send error")
