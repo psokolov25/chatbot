@@ -1,12 +1,12 @@
 @startuml
 title Регистрация визита и уведомление о вызове
 
-skinparam shadowing false
+!include style.iuml
 skinparam sequenceMessageAlign center
-skinparam defaultFontName Arial
-skinparam participant {
-  BackgroundColor White
-  BorderColor #333333
+skinparam sequence {
+  GroupBorderColor #7aa6d8
+  GroupBackgroundColor #f8fbff
+  GroupHeaderFontColor #1f4e79
 }
 
 actor "Посетитель" as User
@@ -52,5 +52,17 @@ Rest -> CometD : событие VISIT_CALL
 CometD --> Bot : event VISIT_CALL\nprm.TelegramCustomerId
 Bot -> Telegram : sendMessage\n"Вы вызваны к специалисту"
 Telegram -> User : уведомление
+
+legend bottom
+Условные обозначения:
+- Сплошная стрелка (->): исходящий запрос / команда
+- Пунктирная стрелка (-->) : ответ / асинхронное событие
+- Блоки "== ... ==" : логические этапы сценария
+--
+Ключевые точки:
+1) Получение услуг: GET /services
+2) Создание визита: POST /visits + parameters.TelegramCustomerId
+3) Уведомление о вызове: VISIT_CALL -> sendMessage
+endlegend
 
 @enduml
