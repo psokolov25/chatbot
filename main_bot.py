@@ -451,7 +451,7 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
     await state.finish()
 
 
-@dp.callback_query_handler()
+@dp.callback_query_handler(state="*")
 async def callbacks(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
     if callback.data == "take-ticket":
