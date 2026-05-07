@@ -365,6 +365,12 @@ def get_branches_keyboard():
     return keyboard
 
 
+def get_single_branch_id() -> int:
+    if len(BRANCHES) == 1:
+        return BRANCHES[0].branch_id
+    return 0
+
+
 def get_services_request(branch_id: int):
     url = f'{ORCHESTRA_URL}rest/servicepoint/branches/{branch_id}/services/'
     logging.info("GET services: %s", url)
@@ -449,12 +455,22 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
 async def callbacks(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
     if callback.data == "take-ticket":
-        await bot.send_message(
-            callback.from_user.id,
-            "Выберите отделение:",
-            reply_markup=get_branches_keyboard()
-        )
-        await state.set_state(States.branch)
+        single_branch_id = get_single_branch_id()
+        if single_branch_id:
+            await state.update_data(branch_id=single_branch_id)
+            await bot.send_message(
+                callback.from_user.id,
+                "Выберите услугу:",
+                reply_markup=get_services(single_branch_id)
+            )
+            await state.set_state(States.get_ticket)
+        else:
+            await bot.send_message(
+                callback.from_user.id,
+                "Выберите отделение:",
+                reply_markup=get_branches_keyboard()
+            )
+            await state.set_state(States.branch)
     elif callback.data.startswith("branch:"):
         branch_id = int(callback.data.split(":")[1])
         if branch_id not in BRANCH_MAP:
