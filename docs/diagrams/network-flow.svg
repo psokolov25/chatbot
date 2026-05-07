@@ -14,6 +14,8 @@
     </marker>
   </defs>
 
+  <rect x="0" y="0" width="1700" height="980" fill="#ffffff"/>
+
   <text x="850" y="60" text-anchor="middle" class="title">Telegram-бот регистрации визита в Qmatic Orchestra 6 — сетевая схема размещения</text>
   <text x="850" y="95" text-anchor="middle" class="subtitle">Подписи вынесены в легенду, чтобы стрелки и элементы не накладывались</text>
 
@@ -107,10 +109,21 @@
 
   <rect x="40" y="800" width="1620" height="150" rx="14" fill="#f8fbff" stroke="#7aa6d8" stroke-width="2"/>
   <text x="850" y="835" text-anchor="middle" class="legend" font-weight="700">Легенда соединений</text>
-  <text x="70" y="870" class="s">1) Посетитель -> Telegram Bot API: сообщения боту</text>
-  <text x="70" y="900" class="s">2) Bot -> Telegram Bot API через firewall/proxy: outbound HTTPS 443; getUpdates / sendMessage</text>
-  <text x="70" y="930" class="s">3) Bot -> Orchestra REST API: GET services, POST visits | 4) Bot -> Orchestra CometD: /cometd + long-polling</text>
-  <text x="900" y="870" class="s">5) Orchestra -> DB: чтение услуг, создание визита, события VISIT_CALL</text>
-  <text x="900" y="900" class="s">6) Bot -> DNS: разрешение имен | 7) Bot -> NTP: синхронизация времени</text>
-  <text x="900" y="930" class="s">8) Bot -> Log collector: stdout / journald / ELK</text>
+  <line x1="85" y1="850" x2="1615" y2="850" stroke="#b9d0ea" stroke-width="1"/>
+  <line x1="135" y1="850" x2="135" y2="940" stroke="#b9d0ea" stroke-width="1"/>
+  <text x="100" y="878" text-anchor="middle" class="s" font-weight="700">1</text>
+  <text x="150" y="878" class="s">Посетитель -> Telegram Bot API: сообщения боту</text>
+  <text x="100" y="904" text-anchor="middle" class="s" font-weight="700">2</text>
+  <text x="150" y="904" class="s">Bot -> Telegram Bot API через firewall/proxy: outbound HTTPS 443; getUpdates/sendMessage</text>
+  <text x="100" y="930" text-anchor="middle" class="s" font-weight="700">3</text>
+  <text x="150" y="930" class="s">Bot -> Orchestra REST API: GET services, POST visits</text>
+
+  <line x1="850" y1="850" x2="850" y2="940" stroke="#b9d0ea" stroke-width="1"/>
+  <line x1="930" y1="850" x2="930" y2="940" stroke="#b9d0ea" stroke-width="1"/>
+  <text x="890" y="878" text-anchor="middle" class="s" font-weight="700">4</text>
+  <text x="945" y="878" class="s">Bot -> Orchestra CometD: /cometd + long-polling</text>
+  <text x="890" y="904" text-anchor="middle" class="s" font-weight="700">5</text>
+  <text x="945" y="904" class="s">Orchestra -> DB: чтение услуг, создание визита, события VISIT_CALL</text>
+  <text x="890" y="930" text-anchor="middle" class="s" font-weight="700">6-8</text>
+  <text x="945" y="930" class="s">Bot -> DNS/NTP/Log collector: инфраструктурные исходящие соединения</text>
 </svg>

@@ -2,6 +2,7 @@
 title Telegram-бот регистрации визита в Qmatic Orchestra 6 — сетевой контур
 
 !include style.iuml
+skinparam BackgroundColor #ffffff
 skinparam cloud {
   BackgroundColor #f8fbff
   BorderColor #5b8cc0
@@ -39,17 +40,19 @@ Bot --> DNS : DNS lookup
 Bot --> NTP : time sync
 Bot --> Logs : stdout logs
 
-legend bottom
-1) Посетитель -> Telegram Bot API: сообщения боту
-2) Bot -> Telegram Bot API: outbound HTTPS 443 (getUpdates/sendMessage)
-3) Bot -> Orchestra REST API: GET services, POST visits
-4) Bot -> Orchestra CometD: /cometd, handshake/subscribe/connect (long-polling)
-5) Orchestra -> DB: чтение/запись визитов, услуги, VISIT_CALL
-6) Bot -> DNS: разрешение имен
-7) Bot -> NTP: синхронизация времени
-8) Bot -> Log collector: stdout / journald / ELK
---
-Входящий порт из интернета не нужен: бот работает через polling, а не через webhook.
+legend bottom center
+|= № |= Соединение |
+| 1 | Посетитель -> Telegram Bot API: сообщения боту |
+| 2 | Bot -> Telegram Bot API: outbound HTTPS 443 (getUpdates/sendMessage) |
+| 3 | Bot -> Orchestra REST API: GET services, POST visits |
+| 4 | Bot -> Orchestra CometD: /cometd, handshake/subscribe/connect (long-polling) |
+| 5 | Orchestra -> DB: чтение/запись визитов, услуги, VISIT_CALL |
+| 6 | Bot -> DNS: разрешение имен |
+| 7 | Bot -> NTP: синхронизация времени |
+| 8 | Bot -> Log collector: stdout / journald / ELK |
+
+Входящий порт из интернета не нужен:
+бот работает через polling, а не через webhook.
 endlegend
 
 @enduml

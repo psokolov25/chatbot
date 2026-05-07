@@ -137,7 +137,8 @@ pytest -q
 
 ### 5.1 Сетевая схема размещения и доступов (Network & Security Layout)
 
-Исходник диаграммы: `docs/diagrams/src/network-flow.puml`.
+Исходник диаграммы: `docs/diagrams/src/network-flow.puml`.  
+SVG: `docs/diagrams/network-flow.svg`
 
 > Ниже — целевая схема для ИБ/инфраструктуры: где размещать сервисы, какие потоки разрешать и что блокировать по умолчанию.
 
