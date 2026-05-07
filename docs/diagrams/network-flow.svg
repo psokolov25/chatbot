@@ -54,13 +54,13 @@
   <rect x="1040" y="140" width="620" height="440" rx="20" fill="#edf7ee" stroke="#549860" stroke-width="3"/>
   <text x="1350" y="190" text-anchor="middle" class="h" fill="#266e36">Application segment</text>
 
-  <rect x="1110" y="220" width="280" height="150" rx="16" fill="#f2f2f2" stroke="#5c9f6b" stroke-width="3"/>
+  <rect x="1110" y="220" width="280" height="170" rx="16" fill="#f2f2f2" stroke="#5c9f6b" stroke-width="3"/>
   <text x="1250" y="265" text-anchor="middle" class="t" font-weight="700">Qmatic Orchestra 6</text>
   <text x="1250" y="300" text-anchor="middle" class="t">REST API</text>
   <text x="1250" y="333" text-anchor="middle" class="t">GET services</text>
   <text x="1250" y="366" text-anchor="middle" class="t">POST visits</text>
 
-  <rect x="1110" y="405" width="280" height="150" rx="16" fill="#f2f2f2" stroke="#5c9f6b" stroke-width="3"/>
+  <rect x="1110" y="405" width="280" height="170" rx="16" fill="#f2f2f2" stroke="#5c9f6b" stroke-width="3"/>
   <text x="1250" y="450" text-anchor="middle" class="t" font-weight="700">Qmatic Orchestra 6</text>
   <text x="1250" y="485" text-anchor="middle" class="t">CometD / Bayeux</text>
   <text x="1250" y="518" text-anchor="middle" class="t">/events</text>
@@ -107,23 +107,29 @@
   <line x1="850" y1="430" x2="1280" y2="680" stroke="#666" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#arr)"/>
   <circle cx="1020" cy="550" r="14" fill="#fff" stroke="#444" stroke-width="2"/><text x="1020" y="557" text-anchor="middle" class="n">8</text>
 
-  <rect x="40" y="800" width="1620" height="150" rx="14" fill="#f8fbff" stroke="#7aa6d8" stroke-width="2"/>
+  <rect x="40" y="800" width="1620" height="170" rx="14" fill="#f8fbff" stroke="#7aa6d8" stroke-width="2"/>
   <text x="850" y="835" text-anchor="middle" class="legend" font-weight="700">Легенда соединений</text>
   <line x1="85" y1="850" x2="1615" y2="850" stroke="#b9d0ea" stroke-width="1"/>
-  <line x1="135" y1="850" x2="135" y2="940" stroke="#b9d0ea" stroke-width="1"/>
+  <line x1="135" y1="850" x2="135" y2="958" stroke="#b9d0ea" stroke-width="1"/>
   <text x="100" y="878" text-anchor="middle" class="s" font-weight="700">1</text>
   <text x="150" y="878" class="s">Посетитель -> Telegram Bot API: сообщения боту</text>
   <text x="100" y="904" text-anchor="middle" class="s" font-weight="700">2</text>
-  <text x="150" y="904" class="s">Bot -> Telegram Bot API через firewall/proxy: outbound HTTPS 443; getUpdates/sendMessage</text>
-  <text x="100" y="930" text-anchor="middle" class="s" font-weight="700">3</text>
-  <text x="150" y="930" class="s">Bot -> Orchestra REST API: GET services, POST visits</text>
+  <text x="150" y="904" class="s">
+    <tspan x="150" dy="0">Bot -> Telegram Bot API через firewall/proxy: outbound HTTPS 443;</tspan>
+    <tspan x="150" dy="22">getUpdates/sendMessage</tspan>
+  </text>
+  <text x="100" y="944" text-anchor="middle" class="s" font-weight="700">3</text>
+  <text x="150" y="944" class="s">Bot -> Orchestra REST API: GET services, POST visits</text>
 
-  <line x1="850" y1="850" x2="850" y2="940" stroke="#b9d0ea" stroke-width="1"/>
-  <line x1="930" y1="850" x2="930" y2="940" stroke="#b9d0ea" stroke-width="1"/>
+  <line x1="850" y1="850" x2="850" y2="958" stroke="#b9d0ea" stroke-width="1"/>
+  <line x1="930" y1="850" x2="930" y2="958" stroke="#b9d0ea" stroke-width="1"/>
   <text x="890" y="878" text-anchor="middle" class="s" font-weight="700">4</text>
   <text x="945" y="878" class="s">Bot -> Orchestra CometD: /cometd + long-polling</text>
   <text x="890" y="904" text-anchor="middle" class="s" font-weight="700">5</text>
-  <text x="945" y="904" class="s">Orchestra -> DB: чтение услуг, создание визита, события VISIT_CALL</text>
-  <text x="890" y="930" text-anchor="middle" class="s" font-weight="700">6-8</text>
-  <text x="945" y="930" class="s">Bot -> DNS/NTP/Log collector: инфраструктурные исходящие соединения</text>
+  <text x="945" y="904" class="s">
+    <tspan x="945" dy="0">Orchestra -> DB: чтение услуг, создание визита,</tspan>
+    <tspan x="945" dy="22">события VISIT_CALL</tspan>
+  </text>
+  <text x="890" y="944" text-anchor="middle" class="s" font-weight="700">6-8</text>
+  <text x="945" y="944" class="s">Bot -> DNS/NTP/Log collector: инфраструктурные исходящие соединения</text>
 </svg>
