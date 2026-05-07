@@ -1,0 +1,67 @@
+@startuml
+title Telegram-бот регистрации визита в Qmatic Orchestra 6 — сетевой контур
+
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam rectangle {
+  RoundCorner 12
+}
+skinparam component {
+  BackgroundColor White
+  BorderColor #333333
+}
+skinparam node {
+  BackgroundColor White
+  BorderColor #333333
+}
+skinparam cloud {
+  BackgroundColor White
+  BorderColor #333333
+}
+
+actor "Посетитель\nTelegram-клиент" as Visitor
+
+cloud "Интернет" as Internet {
+  component "Telegram Bot API\napi.telegram.org:443" as TelegramApi
+}
+
+node "Корпоративный / филиальный контур" as Corp {
+  node "DMZ / integration segment" as DMZ {
+    component "Telegram Orchestra Bot\nPython + aiogram\npolling + CometD client" as Bot
+  }
+
+  node "Application segment" as App {
+    component "Qmatic Orchestra 6" as Orchestra
+    database "Orchestra DB" as OrchestraDb
+  }
+
+  component "DNS" as DNS
+  component "NTP" as NTP
+  component "Log collector\nstdout / journald / ELK" as Logs
+}
+
+Visitor --> TelegramApi : сообщения боту
+Bot --> TelegramApi : HTTPS 443\ngetUpdates/sendMessage\nисходящее соединение
+
+Bot --> Orchestra : REST API\nGET services\nPOST visits
+Bot --> Orchestra : CometD /cometd\nhandshake/subscribe/connect\nlong-polling
+
+Orchestra --> OrchestraDb : чтение/запись визитов
+Bot --> DNS : DNS lookup
+Bot --> NTP : time sync
+Bot --> Logs : stdout logs
+
+note right of Bot
+Входящий порт из интернета не нужен:
+бот работает через polling,
+а не через webhook.
+end note
+
+note bottom of Orchestra
+Доступ должен быть ограничен
+сервисным пользователем
+с минимальными правами.
+end note
+
+@enduml

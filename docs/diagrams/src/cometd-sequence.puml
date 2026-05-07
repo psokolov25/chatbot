@@ -1,0 +1,36 @@
+@startuml
+title CometD-подписка и доставка VISIT_CALL в Telegram
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam defaultFontName Arial
+skinparam participant {
+  BackgroundColor White
+  BorderColor #333333
+}
+
+participant "Telegram Orchestra Bot" as Bot
+participant "Qmatic Orchestra 6\nCometD / events" as CometD
+participant "Telegram Bot API" as Telegram
+actor "Посетитель" as User
+
+== Поднятие CometD-сессии ==
+
+Bot -> CometD : /meta/handshake
+CometD --> Bot : clientId + cookie
+Bot -> CometD : /meta/subscribe\n/events/{prefix}/QVoiceLight\n(для каждого филиала)
+Bot -> CometD : publish INIT\n/events/INIT\nuid={prefix}:QVoiceLight
+
+loop long-polling connect loop
+  Bot -> CometD : /meta/connect
+  CometD --> Bot : meta/events
+end
+
+== Обработка события вызова ==
+
+CometD --> Bot : VISIT_CALL\nprm.TelegramCustomerId
+Bot -> Bot : валидация филиала и шаблона\nVISIT_CALL_TEMPLATE / per-branch override
+Bot -> Telegram : sendMessage(chat_id=TelegramCustomerId)
+Telegram --> User : уведомление о вызове
+
+@enduml
