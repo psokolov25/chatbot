@@ -133,25 +133,94 @@ pytest -q
 
 ## 5. Архитектура и UML-диаграммы
 
-Ниже добавлены PlantUML-диаграммы. В репозитории хранятся исходники (`.puml`) и сгенерированные SVG, которые отображаются прямо в README.
+Ниже добавлены PlantUML-диаграммы. В репозитории хранятся исходники (`.puml`) в `docs/diagrams/src/` и сгенерированные SVG в `docs/diagrams/`, которые отображаются прямо в README.
 
-### 5.1 Сетевая работа (Network Flow)
+### 5.1 Сетевая схема размещения и доступов (Network & Security Layout)
 
-Исходник: `docs/diagrams/network-flow.puml`  
-SVG: `docs/diagrams/network-flow.svg`
+Исходник диаграммы: `docs/diagrams/src/network-flow.puml`.
+
+> Ниже — целевая схема для ИБ/инфраструктуры: где размещать сервисы, какие потоки разрешать и что блокировать по умолчанию.
+
+#### 5.1.1 Размещение компонентов
+
+- **Контур заказчика (private LAN / DC / VPC):**
+  - `Queue Bot` (`main_bot.py`) — VM/контейнер без внешней публикации порта.
+  - `Orchestra REST API` и `Orchestra CometD endpoint` — внутренние сервисы.
+  - `Orchestra DB` — отдельный внутренний сегмент (backend/data zone).
+- **Внешний контур (Интернет):**
+  - только `Telegram Cloud API` (`api.telegram.org`).
+
+#### 5.1.2 Матрица сетевых доступов (ACL/FW)
+
+| Источник | Назначение | Протокол/порт | Направление | Зачем нужно | Политика |
+|---|---|---|---|---|---|
+| Queue Bot | `api.telegram.org` | TCP 443 (HTTPS) | EGRESS | `getUpdates`, `sendMessage` | **ALLOW** |
+| Queue Bot | Orchestra REST | TCP 443 (или 8080) | EGRESS | `GET /services`, `POST /visits` | **ALLOW** |
+| Queue Bot | Orchestra CometD | TCP 443 (или порт Bayeux) | EGRESS | handshake/connect/subscribe | **ALLOW** |
+| Orchestra REST/CometD | Orchestra DB | TCP `<db_port>` | EAST-WEST | чтение/запись бизнес-данных | **ALLOW (внутри private zone)** |
+| Интернет | Queue Bot | Any | INGRESS | не требуется | **DENY** |
+| Интернет | Orchestra REST/CometD | Any | INGRESS | не требуется | **DENY** |
+| Интернет | Orchestra DB | Any | INGRESS | не требуется | **DENY** |
+
+> Если используете нестандартные порты, зафиксируйте их в change-request и в правилах FW/NACL как отдельные явные ALLOW-правила.
+
+#### 5.1.3 Что обязательно закрыть
+
+- Проброс `ports:` у контейнера бота наружу.
+- Публичный IP/NAT на сервере бота.
+- Прямой внешний доступ к БД Orchestra.
+- Админ-интерфейсы (SSH/RDP/панели) из Интернета.
+
+#### 5.1.4 Рекомендуемая сегментация
+
+- `APP zone`: Queue Bot.
+- `SERVICE zone`: Orchestra REST/CometD.
+- `DATA zone`: Orchestra DB.
+- Межзонные правила — принцип **least privilege** (только конкретный src/dst/port).
+
+#### 5.1.5 Минимальные требования к TLS и доступу
+
+- Для всех внешних и межсервисных соединений использовать TLS 1.2+.
+- Для исходящего доступа бота разрешать DNS + HTTPS только к требуемым хостам.
+- Администрирование — через VPN/jump host + allowlist по источникам.
+- Секреты (`API_TOKEN`, `ORCHESTRA_PASSWORD`) хранить в vault/secret-store, не в открытом `.env` в git.
+
+#### 5.1.6 Контрольный чек-лист перед запуском
+
+- [ ] У бота нет открытых входящих портов (`ss -lntp` / `docker ps`).
+- [ ] Есть исходящий доступ к `api.telegram.org:443`.
+- [ ] Есть исходящий доступ к Orchestra REST и CometD endpoint.
+- [ ] Из Интернета недоступны Orchestra и DB.
+- [ ] Включены логи и алерты на обрыв CometD-сессии/ошибки reconnect.
+
+
+#### 5.1.7 Уточнения с учётом текущей версии бота (изменения за сегодня)
+
+- Бот работает в **polling-режиме** (webhook не используется), поэтому внешний входящий порт для бота не требуется.
+- CometD-сессия поддерживается через `handshake -> subscribe -> INIT -> connect-loop`, плюс watchdog-перезапуск при сбоях.
+- Подписка выполняется **по всем филиалам** из `ORCHESTRA_BRANCHES` на каналы `/events/{prefix}/QVoiceLight`.
+- Уведомления `VISIT_CALL` отправляются только адресату из `prm.TelegramCustomerId`.
+- Шаблон текста вызова поддерживает глобальный `VISIT_CALL_TEMPLATE` и филиальные override через `ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES`.
 
 ![Network Flow](docs/diagrams/network-flow.svg)
 
+
 ### 5.2 Последовательность получения талона
 
-Исходник: `docs/diagrams/ticket-sequence.puml`  
+Исходник: `docs/diagrams/src/ticket-sequence.puml`  
 SVG: `docs/diagrams/ticket-sequence.svg`
 
 ![Ticket Sequence](docs/diagrams/ticket-sequence.svg)
 
+
+**Что важно в актуальном процессе (по диаграмме):**
+- На старте бот поднимает polling и CometD-подключение, включая `INIT` для каждого branch prefix.
+- При выдаче талона используется endpoint `entryPoints/{entryPointId}/visits` и передаётся `parameters.TelegramCustomerId`.
+- При `VISIT_CALL` бот матчит `TelegramCustomerId` из события и отправляет персональное сообщение в Telegram.
+
 ### 5.3 Последовательность CometD-подписки и нотификаций
 
-Исходник: `docs/diagrams/cometd-sequence.puml`  
+Исходник: `docs/diagrams/src/cometd-sequence.puml`  
 SVG: `docs/diagrams/cometd-sequence.svg`
 
 ![CometD Sequence](docs/diagrams/cometd-sequence.svg)

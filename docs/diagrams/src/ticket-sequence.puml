@@ -1,0 +1,56 @@
+@startuml
+title Регистрация визита и уведомление о вызове
+
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam defaultFontName Arial
+skinparam participant {
+  BackgroundColor White
+  BorderColor #333333
+}
+
+actor "Посетитель" as User
+participant "Telegram Bot API" as Telegram
+participant "Telegram Orchestra Bot" as Bot
+participant "Qmatic Orchestra 6\nREST API" as Rest
+participant "Qmatic Orchestra 6\nCometD / events" as CometD
+participant "Оператор / рабочее место" as Operator
+
+== Инициализация бота ==
+
+Bot -> Telegram : start polling
+Bot -> CometD : /meta/handshake
+CometD --> Bot : clientId
+Bot -> CometD : /meta/subscribe\n/events/{branchCode}/QVoiceLight
+CometD --> Bot : subscribe successful
+Bot -> CometD : publish INIT\n/events/INIT\nuid={branchCode}:QVoiceLight
+Bot -> CometD : /meta/connect long-polling loop
+
+== Регистрация визита ==
+
+User -> Telegram : /start
+Telegram -> Bot : update /start
+Bot -> Telegram : "Выберите действие"\n[Взять талон]
+User -> Telegram : нажимает "Взять талон"
+Telegram -> Bot : callback take-ticket
+
+Bot -> Rest : GET /rest/servicepoint/branches/{branchId}/services/
+Rest --> Bot : список услуг
+Bot -> Telegram : inline-клавиатура услуг
+
+User -> Telegram : выбирает услугу
+Telegram -> Bot : callback serviceId
+
+Bot -> Rest : POST /rest/entrypoint/branches/{branchId}/entryPoints/{entryPointId}/visits/\nservices=[serviceId]\nparameters.TelegramCustomerId
+Rest --> Bot : созданный визит / ticketId
+Bot -> Telegram : "Ваш талон: {ticketId}"
+
+== Вызов посетителя ==
+
+Operator -> Rest : вызывает визит к специалисту
+Rest -> CometD : событие VISIT_CALL
+CometD --> Bot : event VISIT_CALL\nprm.TelegramCustomerId
+Bot -> Telegram : sendMessage\n"Вы вызваны к специалисту"
+Telegram -> User : уведомление
+
+@enduml
