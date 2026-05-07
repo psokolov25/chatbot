@@ -224,3 +224,19 @@ SVG: `docs/diagrams/ticket-sequence.svg`
 SVG: `docs/diagrams/cometd-sequence.svg`
 
 ![CometD Sequence](docs/diagrams/cometd-sequence.svg)
+
+
+**Что важно в актуальном процессе CometD (по диаграмме):**
+- Подписка создаётся по каждому `prefix` из `ORCHESTRA_BRANCHES`, затем публикуется `INIT` в `/events/INIT`.
+- Основной режим доставки событий — long-polling через цикл `/meta/connect`.
+- На `VISIT_CALL` бот валидирует контекст филиала и выбирает шаблон уведомления (глобальный или филиальный override).
+- Сообщение отправляется строго в `chat_id = prm.TelegramCustomerId`, что исключает рассылку «чужим» пользователям.
+
+#### 5.4 Эксплуатационные примечания по диаграммам
+
+- `docs/diagrams/src/*.puml` — единственный источник правды для UML.
+- `docs/diagrams/*.svg` — артефакты рендера для README; их нужно обновлять при изменении `.puml`.
+- При изменениях в логике бота (REST endpoint, CometD lifecycle, шаблоны сообщений, multi-branch) синхронно обновляйте:
+  1) соответствующий `.puml`;
+  2) SVG;
+  3) пояснение в разделах 5.1–5.3.
