@@ -52,6 +52,21 @@
 | Переменная | Назначение | По умолчанию |
 |---|---|---|
 | `SERVICE_BLACKLIST` | Услуги, скрытые в меню (через запятую) | `Оплата услуг` |
+| `VISIT_CALL_TEMPLATE` | Общий шаблон текста вызова посетителя для всех филиалов | `Уважаемый клиент! ...` |
+| `ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES` | JSON-объект переопределений шаблона по `branchId` или `prefix` | пусто |
+
+Шаблоны поддерживают плейсхолдеры Python `str.format` из полей `prm` события `VISIT_CALL`, например:
+- `{ticketId}`, `{ticket}`, `{servicePointId}`, `{servicePointName}`, `{branchName}`, `{waitingTime}`, `{TelegramCustomerFullName}`.
+
+Примеры:
+
+```env
+# один шаблон на все филиалы
+VISIT_CALL_TEMPLATE=Клиент {ticketId}, пройдите к рабочему месту {servicePointId}
+
+# отдельные шаблоны по branchId/prefix
+ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES={"6":"Нотариус: талон {ticketId}, окно {servicePointName}","SVR":"Северный филиал: {ticket} -> {servicePointId}"}
+```
 
 ---
 
@@ -140,4 +155,3 @@ SVG: `docs/diagrams/ticket-sequence.svg`
 SVG: `docs/diagrams/cometd-sequence.svg`
 
 ![CometD Sequence](docs/diagrams/cometd-sequence.svg)
-
