@@ -1,0 +1,19 @@
+@startuml
+skinparam backgroundColor transparent
+actor User
+participant "Telegram" as TG
+participant "Queue Bot\n(main_bot.py)" as Bot
+participant "Orchestra REST API" as REST
+participant "Orchestra CometD" as CometD
+
+User -> TG: /start, callbacks
+TG -> Bot: Updates (long polling)
+Bot -> REST: GET /services (branch)
+REST --> Bot: services list
+Bot -> REST: POST /visits (entry point)
+REST --> Bot: ticket
+
+CometD --> Bot: VISIT_CALL event
+Bot -> TG: send_message(ticket call)
+TG --> User: notification
+@enduml
