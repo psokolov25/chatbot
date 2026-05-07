@@ -7,7 +7,7 @@
 - подписывается на CometD события по префиксам отделений;
 - уведомляет клиента о вызове талона (`VISIT_CALL`) только для отделения, где клиент получил талон.
 
-Основной runtime-файл: `bot2.py`.
+Основной runtime-файл: `main_bot.py`.
 
 ---
 
@@ -55,6 +55,21 @@
 
 ---
 
+### 1.5 Пример `.env` для нескольких филиалов
+
+```env
+API_TOKEN=...
+ORCHESTRA_URL=http://127.0.0.1:8080/
+ORCHESTRA_LOGIN=superadmin
+ORCHESTRA_PASSWORD=ulan
+ORCHESTRA_BRANCHES=[{"id":6,"name":"Центральное отделение","prefix":"NTR","entry_point_id":2},{"id":7,"name":"Северное отделение","prefix":"SVR","entry_point_id":3}]
+SERVICE_BLACKLIST=Оплата услуг
+```
+
+Если `ORCHESTRA_BRANCHES` задан, бот полностью работает в многофилиальном режиме и fallback-переменные (`BRANCH_ID`, `ORCHESTRA_ENTRY_POINT_ID`, `ORCHESTRA_BRANCH_CODE`) не используются.
+
+---
+
 ## 2. Поведение бота
 
 1. Пользователь отправляет `/start`.
@@ -77,12 +92,14 @@ export ORCHESTRA_URL="http://...:8080/"
 export ORCHESTRA_LOGIN="..."
 export ORCHESTRA_PASSWORD="..."
 export ORCHESTRA_BRANCHES='[{"id":6,"name":"Центральное","prefix":"NTR","entry_point_id":2}]'
-python bot2.py
+python main_bot.py
 ```
 
 ### 3.2 Docker Compose
 
 ```bash
+cp .env.example .env
+# заполните .env (особенно API_TOKEN и ORCHESTRA_BRANCHES)
 docker compose up -d --build
 docker compose logs -f queue-bot
 ```
@@ -96,3 +113,31 @@ pytest -q
 ```
 
 Тесты покрывают парсинг и валидацию многофилиальной конфигурации (`ORCHESTRA_BRANCHES`) в `branch_config.py`.
+
+---
+
+## 5. Архитектура и UML-диаграммы
+
+Ниже добавлены PlantUML-диаграммы. В репозитории хранятся исходники (`.puml`) и сгенерированные SVG, которые отображаются прямо в README.
+
+### 5.1 Сетевая работа (Network Flow)
+
+Исходник: `docs/diagrams/network-flow.puml`  
+SVG: `docs/diagrams/network-flow.svg`
+
+![Network Flow](docs/diagrams/network-flow.svg)
+
+### 5.2 Последовательность получения талона
+
+Исходник: `docs/diagrams/ticket-sequence.puml`  
+SVG: `docs/diagrams/ticket-sequence.svg`
+
+![Ticket Sequence](docs/diagrams/ticket-sequence.svg)
+
+### 5.3 Последовательность CometD-подписки и нотификаций
+
+Исходник: `docs/diagrams/cometd-sequence.puml`  
+SVG: `docs/diagrams/cometd-sequence.svg`
+
+![CometD Sequence](docs/diagrams/cometd-sequence.svg)
+

@@ -1,0 +1,20 @@
+@startuml
+skinparam backgroundColor transparent
+participant Bot
+participant CometD
+participant Telegram
+participant User
+
+Bot -> CometD: /meta/handshake
+CometD --> Bot: clientId + cookie
+Bot -> CometD: /meta/subscribe (per branch prefix)
+Bot -> CometD: /events/INIT (per branch prefix)
+loop long-poll
+  Bot -> CometD: /meta/connect
+  CometD --> Bot: events/meta
+end
+CometD --> Bot: VISIT_CALL(TelegramCustomerId)
+Bot -> Bot: validate branch subscription
+Bot -> Telegram: send_message()
+Telegram --> User: called to service point
+@enduml
