@@ -47,6 +47,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 last_connect_ok = 0        # timestamp последнего успешного /meta/connect
 last_event_received = 0    # timestamp последнего события
 cometd_task = None         # ссылка на фоновой CometD-задачу
+cometd_reconnecting = False # флаг: идёт цикл переподключения после ошибки
 
 
 # ================================================================
@@ -247,15 +248,13 @@ async def cometd_watchdog(start_callback):
     """
     Следит за живучестью CometD:
     - отсутствие connect > 120 сек
-    - отсутствие событий > 10 мин
     - падение фоновой задачи
     - «тихая смерть» после пересброса Orchestra
     """
-    global cometd_task, last_connect_ok, last_event_received
+    global cometd_task, last_connect_ok, last_event_received, cometd_reconnecting
 
     CHECK_INTERVAL = 30
     CONNECT_TIMEOUT = 120
-    EVENT_TIMEOUT = 600
 
     while True:
         await asyncio.sleep(CHECK_INTERVAL)
@@ -267,18 +266,21 @@ async def cometd_watchdog(start_callback):
             reason = "CometD coroutine crashed"
 
         elif last_connect_ok and (now - last_connect_ok) > CONNECT_TIMEOUT:
-            reason = "No /meta/connect replies"
-
-        elif last_event_received and (now - last_event_received) > EVENT_TIMEOUT:
-            reason = "No events from Orchestra"
+            # если основной цикл уже в фазе reconnect/backoff — не форсируем отдельный restart
+            if not cometd_reconnecting:
+                reason = "No /meta/connect replies"
 
         if reason:
             logging.warning("WATCHDOG: restarting CometD because: %s", reason)
 
-            try:
+            if cometd_task is not None:
                 cometd_task.cancel()
-            except:
-                pass
+                try:
+                    await cometd_task
+                except asyncio.CancelledError:
+                    pass
+                except Exception:
+                    logging.exception("CometD task failed during watchdog restart")
 
             await asyncio.sleep(2)
             cometd_task = start_callback()
@@ -292,7 +294,25 @@ async def cometd(bot: Bot):
     channel_subscribe = f"/events/{ORCHESTRA_BRANCH_CODE}/QVoiceLight"
     channel_init = "/events/INIT"
 
-    await run_cometd_session(bot, cometd_url, channel_subscribe, channel_init)
+    global cometd_reconnecting, last_connect_ok
+
+    retry_delay = 2
+    max_retry_delay = 60
+
+    while True:
+        try:
+            cometd_reconnecting = False
+            await run_cometd_session(bot, cometd_url, channel_subscribe, channel_init)
+            retry_delay = 2
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            # connect-сессия завершилась: переходим в режим controlled reconnect
+            cometd_reconnecting = True
+            last_connect_ok = 0
+            logging.exception("CometD session ended, will reconnect in %ss: %s", retry_delay, exc)
+            await asyncio.sleep(retry_delay)
+            retry_delay = min(retry_delay * 2, max_retry_delay)
 
 
 # ================================================================

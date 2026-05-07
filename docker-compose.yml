@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  queue-bot:
+    build: .
+    container_name: queue-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Fallbacks in case variables are absent in .env
+      API_TOKEN: ${API_TOKEN:-}
+      ORCHESTRA_URL: ${ORCHESTRA_URL:-http://127.0.0.1:8080/}
+      ORCHESTRA_LOGIN: ${ORCHESTRA_LOGIN:-superadmin}
+      ORCHESTRA_PASSWORD: ${ORCHESTRA_PASSWORD:-ulan}
+      BRANCH_ID: ${BRANCH_ID:-6}
+      ORCHESTRA_ENTRY_POINT_ID: ${ORCHESTRA_ENTRY_POINT_ID:-2}
+      ORCHESTRA_BRANCH_CODE: ${ORCHESTRA_BRANCH_CODE:-NTR}
+      SERVICE_BLACKLIST: ${SERVICE_BLACKLIST:-Оплата услуг}
