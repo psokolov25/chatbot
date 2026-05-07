@@ -3,10 +3,15 @@ title Telegram-бот регистрации визита в Qmatic Orchestra 6 
 
 !include style.iuml
 skinparam BackgroundColor #ffffff
+skinparam linetype ortho
+skinparam nodesep 70
+skinparam ranksep 90
 skinparam cloud {
   BackgroundColor #f8fbff
   BorderColor #5b8cc0
 }
+
+left to right direction
 
 actor "Посетитель\nTelegram-клиент" as Visitor
 
@@ -28,6 +33,12 @@ node "Корпоративный / филиальный контур" as Corp {
   component "NTP" as NTP
   component "Log collector\nstdout / journald / ELK" as Logs
 }
+
+' стабилизация расположения без дополнительных видимых связей
+DMZ -[hidden]-> App
+App -[hidden]-> DNS
+DNS -[hidden]-> NTP
+NTP -[hidden]-> Logs
 
 Visitor --> TelegramApi : сообщения боту
 Bot --> TelegramApi : HTTPS 443\ngetUpdates/sendMessage\nисходящее соединение
