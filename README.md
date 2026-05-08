@@ -1,19 +1,48 @@
 # Queue Telegram Bot (Orchestra + CometD)
 
-Бот для Telegram, который:
-- показывает список отделений;
-- после выбора отделения показывает услуги;
-- создаёт талон (visit) в правильный `entryPoint` выбранного отделения;
-- подписывается на CometD события по префиксам отделений;
-- уведомляет клиента о вызове талона (`VISIT_CALL`) только для отделения, где клиент получил талон.
+Telegram-бот электронной очереди для Orchestra, который помогает клиенту взять талон и получить персональное уведомление о вызове.
 
-Основной runtime-файл: `main_bot.py`.
+## Что умеет бот
+
+- показывает список отделений (многофилиальный режим) или работает с одним отделением (fallback-режим);
+- показывает услуги выбранного отделения;
+- создаёт талон (`visit`) в правильный `entryPoint`;
+- подписывается на CometD-события по префиксам отделений;
+- отправляет уведомления только тому пользователю, чей талон вызвали (`VISIT_CALL`).
+
+> Основной runtime-файл: `main_bot.py`.
 
 ---
 
-## 1. Конфигурация
+## Содержание
 
-### 1.1 Обязательные параметры
+1. [Быстрый старт](#быстрый-старт)
+2. [Конфигурация](#конфигурация)
+3. [Режимы работы (single/multi-branch)](#режимы-работы-singlemulti-branch)
+4. [Запуск](#запуск)
+5. [Тестирование](#тестирование)
+6. [Архитектура и диаграммы](#архитектура-и-диаграммы)
+7. [Рекомендации по безопасности и эксплуатации](#рекомендации-по-безопасности-и-эксплуатации)
+8. [Диагностика и частые проблемы](#диагностика-и-частые-проблемы)
+
+---
+
+## Быстрый старт
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+# заполните .env
+python main_bot.py
+```
+
+Минимально нужны: `API_TOKEN`, `ORCHESTRA_URL`, `ORCHESTRA_LOGIN`, `ORCHESTRA_PASSWORD`.
+
+---
+
+## Конфигурация
+
+### Обязательные переменные
 
 | Переменная | Назначение |
 |---|---|
@@ -22,7 +51,43 @@
 | `ORCHESTRA_LOGIN` | Логин Orchestra |
 | `ORCHESTRA_PASSWORD` | Пароль Orchestra |
 
-### 1.2 Многофилиальный режим
+### Дополнительные переменные
+
+| Переменная | Назначение | Значение по умолчанию |
+|---|---|---|
+| `SERVICE_BLACKLIST` | Услуги, скрытые в меню (через запятую) | `Оплата услуг` |
+| `VISIT_CALL_TEMPLATE` | Общий шаблон уведомления о вызове | `Уважаемый клиент! ...` |
+| `ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES` | JSON-переопределения шаблонов по `branchId`/`prefix` | пусто |
+| `ORCHESTRA_MULTI_SERVICE_ENABLED` | Включить выбор нескольких услуг (`true/false`) | `false` |
+| `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED` | JSON-переопределения мультисервиса по `branchId`/`prefix` | пусто |
+| `LOG_LEVEL` | Уровень логирования Python (`DEBUG/INFO/WARNING/ERROR/CRITICAL`) | `INFO` |
+
+### Шаблоны уведомлений
+
+Поддерживаются плейсхолдеры Python `str.format` из полей `prm` события `VISIT_CALL`, например:
+
+- `{ticketId}`,
+- `{ticket}`,
+- `{servicePointId}`,
+- `{servicePointName}`,
+- `{branchName}`,
+- `{waitingTime}`,
+- `{TelegramCustomerFullName}`.
+
+Пример:
+
+```env
+VISIT_CALL_TEMPLATE=Клиент {ticketId}, пройдите к рабочему месту {servicePointId}
+ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES={"6":"Нотариус: талон {ticketId}, окно {servicePointName}","SVR":"Северный филиал: {ticket} -> {servicePointId}"}
+```
+
+Персональные поля (например, `{TelegramCustomerFullName}`) безопасно использовать в шаблонах: при логировании значения маскируются (`***`).
+
+---
+
+## Режимы работы (single/multi-branch)
+
+### Multi-branch (рекомендуется)
 
 Настраивается через `ORCHESTRA_BRANCHES` (JSON-массив):
 
@@ -34,107 +99,41 @@
 ```
 
 Поля:
-- `id` — ID отделения (`branchId`) в Orchestra;
-- `name` — отображаемое имя в Telegram-меню;
-- `prefix` — префикс CometD канала (`/events/{prefix}/QVoiceLight`);
-- `entry_point_id` — ID точки входа для выдачи талона в этом отделении.
 
-### 1.3 Обратная совместимость (однофилиальный режим)
+- `id` — `branchId` в Orchestra;
+- `name` — отображаемое имя кнопки в Telegram;
+- `prefix` — префикс CometD-канала (`/events/{prefix}/QVoiceLight`);
+- `entry_point_id` — `entryPointId` для создания талона в этом отделении.
 
-Если `ORCHESTRA_BRANCHES` не задан, используется fallback:
+### Single-branch fallback (обратная совместимость)
+
+Если `ORCHESTRA_BRANCHES` не задан, используется старый набор:
+
 - `BRANCH_ID`
 - `ORCHESTRA_ENTRY_POINT_ID`
 - `ORCHESTRA_BRANCH_CODE`
-- `ORCHESTRA_BRANCH_NAME` (необязательный, название кнопки отделения)
+- `ORCHESTRA_BRANCH_NAME` (опционально)
 
-### 1.4 Дополнительные параметры
+> Если `ORCHESTRA_BRANCHES` задан, fallback-переменные игнорируются.
 
-| Переменная | Назначение | По умолчанию |
-|---|---|---|
-| `SERVICE_BLACKLIST` | Услуги, скрытые в меню (через запятую) | `Оплата услуг` |
-| `VISIT_CALL_TEMPLATE` | Общий шаблон текста вызова посетителя для всех филиалов | `Уважаемый клиент! ...` |
-| `ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES` | JSON-объект переопределений шаблона по `branchId` или `prefix` | пусто |
-| `ORCHESTRA_MULTI_SERVICE_ENABLED` | Включить множественный выбор услуг для всех отделений (`true/false`) | `false` |
-| `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED` | JSON-объект переопределений для отделений по `branchId` или `prefix` | пусто |
-| `LOG_LEVEL` | Уровень логирования Python (`DEBUG/INFO/WARNING/ERROR/CRITICAL`) | `INFO` |
-
-Шаблоны поддерживают плейсхолдеры Python `str.format` из полей `prm` события `VISIT_CALL`, например:
-- `{ticketId}`, `{ticket}`, `{servicePointId}`, `{servicePointName}`, `{branchName}`, `{waitingTime}`, `{TelegramCustomerFullName}`.
-
-Для шаблонов приветствия/вызова можно безопасно использовать персональные поля посетителя (например, `{TelegramCustomerFullName}`): при логировании события значения персональных полей маскируются (`***`) и не попадают в логи в открытом виде.
-
-Примеры:
+### Мультисервис (несколько услуг в один визит)
 
 ```env
-# один шаблон на все филиалы
-VISIT_CALL_TEMPLATE=Клиент {ticketId}, пройдите к рабочему месту {servicePointId}
-
-# отдельные шаблоны по branchId/prefix
-ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES={"6":"Нотариус: талон {ticketId}, окно {servicePointName}","SVR":"Северный филиал: {ticket} -> {servicePointId}"}
-```
-
----
-
-
-### 1.5 Множественный выбор услуг
-
-Можно включить выбор нескольких услуг при создании одного визита:
-
-```env
-# глобально для всех отделений
 ORCHESTRA_MULTI_SERVICE_ENABLED=true
-
-# точечно для отделений (перекрывает глобальное значение)
 ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED={"6":true,"SVR":false}
 ```
 
-Логика приоритета:
-- если для отделения найдено значение в `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED`, используется оно;
-- иначе используется `ORCHESTRA_MULTI_SERVICE_ENABLED`;
-- если оба параметра отсутствуют, множественный выбор выключен.
+Приоритет флагов:
 
-В Telegram при включении режима можно отметить несколько услуг и нажать кнопку «Подтвердить выбор».
-
----
-
-### 1.6 Пример `.env` для нескольких филиалов
-
-```env
-API_TOKEN=...
-ORCHESTRA_URL=http://127.0.0.1:8080/
-ORCHESTRA_LOGIN=superadmin
-ORCHESTRA_PASSWORD=ulan
-ORCHESTRA_BRANCHES=[{"id":6,"name":"Центральное отделение","prefix":"NTR","entry_point_id":2},{"id":7,"name":"Северное отделение","prefix":"SVR","entry_point_id":3},{"id":8,"name":"Южное отделение","prefix":"UG","entry_point_id":4}]
-SERVICE_BLACKLIST=Оплата услуг
-
-# Простой вариант: мультисервис включен везде
-ORCHESTRA_MULTI_SERVICE_ENABLED=true
-
-# Вариант для разных отделений (перекрывает глобальный флаг)
-# Центральное (id=6) - включено
-# Северное (prefix=SVR) - выключено
-# Южное (id=8) - включено
-ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED={"6":true,"SVR":false,"8":true}
-```
-
-Если `ORCHESTRA_BRANCHES` задан, бот полностью работает в многофилиальном режиме и fallback-переменные (`BRANCH_ID`, `ORCHESTRA_ENTRY_POINT_ID`, `ORCHESTRA_BRANCH_CODE`) не используются.
+1. значение для отделения в `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED`;
+2. иначе глобальный `ORCHESTRA_MULTI_SERVICE_ENABLED`;
+3. если оба отсутствуют — выключено.
 
 ---
 
-## 2. Поведение бота
+## Запуск
 
-1. Пользователь отправляет `/start`.
-2. Нажимает «Взять талон».
-3. Выбирает отделение.
-4. Выбирает услугу.
-5. Получает номер талона.
-6. При `VISIT_CALL` в выбранном отделении получает уведомление.
-
----
-
-## 3. Запуск
-
-### 3.1 Локально
+### Локально
 
 ```bash
 pip install -r requirements.txt
@@ -146,7 +145,7 @@ export ORCHESTRA_BRANCHES='[{"id":6,"name":"Центральное","prefix":"NT
 python main_bot.py
 ```
 
-### 3.2 Docker Compose
+### Docker Compose
 
 ```bash
 cp .env.example .env
@@ -157,7 +156,7 @@ docker compose logs -f queue-bot
 
 ---
 
-## 4. Тесты
+## Тестирование
 
 ```bash
 pytest -q
@@ -167,100 +166,79 @@ pytest -q
 
 ---
 
-## 5. Архитектура и UML-диаграммы
+## Архитектура и диаграммы
 
-Диаграммы вынесены в отдельный каталог и поддерживаются в двух формах:
+Диаграммы поддерживаются в двух форматах:
 
-- исходники PlantUML: `docs/diagrams/src/*.puml`;
-- визуализированные SVG для README: `docs/diagrams/*.svg`.
+- PlantUML-исходники: `docs/diagrams/src/*.puml`
+- SVG для документации: `docs/diagrams/*.svg`
 
-Единый стиль диаграмм задан в `docs/diagrams/src/style.iuml`: светлая деловая палитра, аккуратные зоны ответственности, минимизация пересечений стрелок, единая типографика и отдельное выделение внешнего контура, runtime-компонентов, сервисов Orchestra и data-zone.
-
-| Диаграмма | Исходник PlantUML | SVG |
+| Диаграмма | PlantUML | SVG |
 |---|---|---|
 | Runtime-компоненты бота | `docs/diagrams/src/runtime-overview.puml` | `docs/diagrams/runtime-overview.svg` |
 | Сетевое размещение и ACL/FW | `docs/diagrams/src/network-flow.puml` | `docs/diagrams/network-flow.svg` |
 | Получение талона и уведомление | `docs/diagrams/src/ticket-sequence.puml` | `docs/diagrams/ticket-sequence.svg` |
 | CometD lifecycle и восстановление | `docs/diagrams/src/cometd-sequence.puml` | `docs/diagrams/cometd-sequence.svg` |
 
-### 5.1 Runtime-компоненты бота
-
-Диаграмма показывает фактическую структуру `main_bot.py` и связанных модулей:
-
-- `branch_config.py` загружает `ORCHESTRA_BRANCHES` или включает однофилиальный fallback;
-- `Aiogram dispatcher` обрабатывает `/start`, callback-кнопки и FSM-состояния;
-- REST workflow получает услуги и создаёт визит в `entryPoint` выбранного филиала;
-- CometD workflow подписывается на `/events/{prefix}/QVoiceLight` по каждому филиалу;
-- `USER_BRANCH_SUBSCRIPTIONS` связывает `chat_id` пользователя с prefix филиала;
-- notification workflow валидирует `VISIT_CALL` и рендерит текст через глобальный или филиальный шаблон.
+### Runtime overview
 
 ![Runtime Overview](docs/diagrams/runtime-overview.svg)
 
-### 5.2 Сетевая схема размещения и доступов
-
-Целевой вариант размещения: бот находится внутри корпоративного или филиального контура, не публикует входящий порт наружу и работает через Telegram polling. Доступ в Интернет нужен только исходящий — к `api.telegram.org:443`.
+### Network flow
 
 ![Network Flow](docs/diagrams/network-flow.svg)
 
-#### 5.2.1 Матрица сетевых доступов
-
-| Источник | Назначение | Протокол/порт | Направление | Назначение потока | Политика |
-|---|---|---:|---|---|---|
-| Queue Telegram Bot | `api.telegram.org` | TCP 443 / HTTPS | EGRESS | `getUpdates`, `sendMessage` | **ALLOW** |
-| Queue Telegram Bot | Orchestra REST API | TCP 443 или внутренний HTTP-порт | EGRESS | получение услуг, создание визита | **ALLOW** |
-| Queue Telegram Bot | Orchestra CometD endpoint | TCP 443 или порт Bayeux/CometD | EGRESS | `handshake`, `subscribe`, `INIT`, `connect` | **ALLOW** |
-| Orchestra REST / CometD | Orchestra DB | внутренний DB-порт | EAST-WEST | чтение/запись бизнес-данных и событий | **ALLOW внутри private zone** |
-| Интернет | Queue Telegram Bot | любой | INGRESS | не требуется, webhook не используется | **DENY** |
-| Интернет | Orchestra REST / CometD | любой | INGRESS | внешний доступ не требуется | **DENY** |
-| Интернет | Orchestra DB | любой | INGRESS | прямой доступ к БД недопустим | **DENY** |
-
-#### 5.2.2 Практические требования к размещению
-
-- Не публиковать `ports:` у контейнера бота наружу.
-- Не выдавать боту публичный IP без необходимости.
-- Разрешить исходящий HTTPS к `api.telegram.org`.
-- Разрешить боту доступ к внутренним endpoint Orchestra REST и CometD.
-- Закрыть БД Orchestra от любых внешних сетей.
-- Администрирование выполнять через VPN, jump host или иной контролируемый административный контур.
-- Секреты (`API_TOKEN`, `ORCHESTRA_PASSWORD`) хранить в secret-store/vault или в защищённом `.env`, не коммитить в открытый репозиторий.
-
-### 5.3 Последовательность получения талона и уведомления
-
-Диаграмма описывает основной бизнес-сценарий: пользователь выбирает действие, филиал и услугу, бот создаёт визит в Orchestra, сохраняет связь пользователя с prefix филиала и затем отправляет персональное уведомление при событии `VISIT_CALL`.
+### Ticket sequence
 
 ![Ticket Sequence](docs/diagrams/ticket-sequence.svg)
 
-Ключевые точки сценария:
+---
 
-- В многофилиальном режиме пользователь сначала выбирает отделение, затем услугу.
-- В однофилиальном режиме отделение выбирается автоматически через fallback-конфигурацию.
-- При создании визита endpoint использует `entryPointId` из `BranchConfig`.
-- В параметры визита передаются `TelegramCustomerId` и `TelegramCustomerFullName`.
-- После успешного создания визита бот сохраняет `chat_id -> branch prefix` в `USER_BRANCH_SUBSCRIPTIONS`.
-- Уведомление по `VISIT_CALL` отправляется только пользователю, чей `TelegramCustomerId` пришёл в событии.
+## Рекомендации по безопасности и эксплуатации
 
-### 5.4 CometD lifecycle и восстановление
+- Не публикуйте входящие порты контейнера бота наружу.
+- Используйте polling (без публичного webhook).
+- Разрешайте только необходимый исходящий доступ:
+  - к `api.telegram.org:443`;
+  - к внутренним endpoint Orchestra (REST + CometD).
+- Не открывайте прямой внешний доступ к БД Orchestra.
+- Храните секреты (`API_TOKEN`, `ORCHESTRA_PASSWORD`) в secret-store/vault или защищённом `.env`.
+- Администрирование — через VPN/jump host/контролируемый админ-контур.
 
-Диаграмма отражает жизненный цикл CometD-сессии в текущей реализации:
+---
 
-- `POST /meta/handshake` получает `clientId` и cookie `BAYEUX_BROWSER`;
-- для каждого `branch.prefix` выполняется `POST /meta/subscribe` на `/events/{prefix}/QVoiceLight`;
-- после подписки публикуется `INIT` в `/events/INIT`;
-- основной цикл работает через long-polling `POST /meta/connect`;
-- при `VISIT_CALL` бот извлекает `prm.TelegramCustomerId`, проверяет филиальный prefix и отправляет сообщение в Telegram;
-- `cometd_watchdog` перезапускает задачу при падении или отсутствии успешного `/meta/connect` дольше контрольного интервала.
+## Диагностика и частые проблемы
 
-![CometD Sequence](docs/diagrams/cometd-sequence.svg)
+### Бот не показывает отделения
 
-### 5.5 Правила сопровождения диаграмм
+Проверьте:
 
-- `docs/diagrams/src/*.puml` считать источником правды.
-- `docs/diagrams/*.svg` обновлять при каждом изменении соответствующего `.puml`.
-- При изменении REST endpoint, CometD lifecycle, multi-branch логики, шаблонов уведомлений или правил сетевого размещения синхронно обновлять PlantUML-исходник, SVG и пояснение в README.
-- Для повторной генерации SVG можно использовать локальный PlantUML с Graphviz, например:
+- валиден ли JSON в `ORCHESTRA_BRANCHES`;
+- есть ли у каждого отделения `id`, `name`, `prefix`, `entry_point_id`.
+
+### Не создаётся талон
+
+Проверьте:
+
+- корректность `ORCHESTRA_URL`;
+- валидность `ORCHESTRA_LOGIN` / `ORCHESTRA_PASSWORD`;
+- существование `entry_point_id` в Orchestra.
+
+### Нет уведомлений о вызове
+
+Проверьте:
+
+- доступность CometD endpoint из окружения бота;
+- корректность `prefix` у отделений;
+- что событие действительно `VISIT_CALL`;
+- что `TelegramCustomerId` в событии соответствует пользователю.
+
+### Полезные команды
 
 ```bash
-plantuml -tsvg -o .. docs/diagrams/src/*.puml
-```
+# логи контейнера
+docker compose logs -f queue-bot
 
-Если PlantUML запускается из другого каталога, учитывайте относительное подключение `!include style.iuml`.
+# запуск тестов
+pytest -q
+```
