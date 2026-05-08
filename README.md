@@ -1,31 +1,60 @@
 # Queue Telegram Bot (Orchestra + CometD)
 
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](#требования)
+[![Docker Compose](https://img.shields.io/badge/Docker%20Compose-supported-2496ED?logo=docker&logoColor=white)](#запуск)
+[![Tests](https://img.shields.io/badge/tests-pytest-0A9EDC?logo=pytest&logoColor=white)](#тестирование)
+[![License](https://img.shields.io/badge/license-Internal-lightgrey)](#лицензия)
+
 Telegram-бот электронной очереди для Orchestra, который помогает клиенту взять талон и получить персональное уведомление о вызове.
 
-## Что умеет бот
+---
 
-- показывает список отделений (многофилиальный режим) или работает с одним отделением (fallback-режим);
-- показывает услуги выбранного отделения;
-- создаёт талон (`visit`) в правильный `entryPoint`;
-- подписывается на CometD-события по префиксам отделений;
-- отправляет уведомления только тому пользователю, чей талон вызвали (`VISIT_CALL`).
+## Оглавление
+
+- [Возможности](#возможности)
+- [Архитектура](#архитектура)
+- [Требования](#требования)
+- [Быстрый старт](#быстрый-старт)
+- [Конфигурация](#конфигурация)
+  - [Обязательные переменные](#обязательные-переменные)
+  - [Дополнительные переменные](#дополнительные-переменные)
+  - [Шаблоны уведомлений](#шаблоны-уведомлений)
+- [Режимы работы (single/multi-branch)](#режимы-работы-singlemulti-branch)
+  - [Multi-branch (рекомендуется)](#multi-branch-рекомендуется)
+  - [Single-branch fallback](#single-branch-fallback-обратная-совместимость)
+  - [Мультисервис](#мультисервис-несколько-услуг-в-один-визит)
+- [Запуск](#запуск)
+  - [Локально](#локально)
+  - [Docker Compose](#docker-compose)
+- [Тестирование](#тестирование)
+- [Диаграммы](#диаграммы)
+- [Безопасность и эксплуатация](#безопасность-и-эксплуатация)
+- [Диагностика и частые проблемы](#диагностика-и-частые-проблемы)
+- [FAQ](#faq)
+- [Лицензия](#лицензия)
+
+---
+
+## Возможности
+
+- Поддержка многофилиального режима и fallback в single-branch конфигурацию.
+- Выбор услуг по отделению и создание талона (`visit`) в корректный `entryPoint`.
+- Подписка на CometD-события по префиксам филиалов.
+- Персональные уведомления при событии `VISIT_CALL` только соответствующему пользователю.
+- Гибкие шаблоны уведомлений (глобальные и по филиалам).
 
 > Основной runtime-файл: `main_bot.py`.
 
----
+## Архитектура
 
-## Содержание
+Бот использует polling Telegram API, REST-взаимодействие с Orchestra для выдачи талонов и CometD-подписку для получения событий о вызове. Состояние пользователя и маршрутизация уведомлений строятся вокруг связи Telegram-пользователя и созданного талона.
 
-1. [Быстрый старт](#быстрый-старт)
-2. [Конфигурация](#конфигурация)
-3. [Режимы работы (single/multi-branch)](#режимы-работы-singlemulti-branch)
-4. [Запуск](#запуск)
-5. [Тестирование](#тестирование)
-6. [Архитектура и диаграммы](#архитектура-и-диаграммы)
-7. [Рекомендации по безопасности и эксплуатации](#рекомендации-по-безопасности-и-эксплуатации)
-8. [Диагностика и частые проблемы](#диагностика-и-частые-проблемы)
+## Требования
 
----
+- Python 3.11+
+- Доступ к Telegram Bot API
+- Доступ к Orchestra (REST + CometD)
+- (Опционально) Docker и Docker Compose
 
 ## Быстрый старт
 
@@ -37,8 +66,6 @@ python main_bot.py
 ```
 
 Минимально нужны: `API_TOKEN`, `ORCHESTRA_URL`, `ORCHESTRA_LOGIN`, `ORCHESTRA_PASSWORD`.
-
----
 
 ## Конфигурация
 
@@ -66,13 +93,13 @@ python main_bot.py
 
 Поддерживаются плейсхолдеры Python `str.format` из полей `prm` события `VISIT_CALL`, например:
 
-- `{ticketId}`,
-- `{ticket}`,
-- `{servicePointId}`,
-- `{servicePointName}`,
-- `{branchName}`,
-- `{waitingTime}`,
-- `{TelegramCustomerFullName}`.
+- `{ticketId}`
+- `{ticket}`
+- `{servicePointId}`
+- `{servicePointName}`
+- `{branchName}`
+- `{waitingTime}`
+- `{TelegramCustomerFullName}`
 
 Пример:
 
@@ -82,8 +109,6 @@ ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES={"6":"Нотариус: талон {ticket
 ```
 
 Персональные поля (например, `{TelegramCustomerFullName}`) безопасно использовать в шаблонах: при логировании значения маскируются (`***`).
-
----
 
 ## Режимы работы (single/multi-branch)
 
@@ -100,10 +125,10 @@ ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES={"6":"Нотариус: талон {ticket
 
 Поля:
 
-- `id` — `branchId` в Orchestra;
-- `name` — отображаемое имя кнопки в Telegram;
-- `prefix` — префикс CometD-канала (`/events/{prefix}/QVoiceLight`);
-- `entry_point_id` — `entryPointId` для создания талона в этом отделении.
+- `id` — `branchId` в Orchestra
+- `name` — отображаемое имя кнопки в Telegram
+- `prefix` — префикс CometD-канала (`/events/{prefix}/QVoiceLight`)
+- `entry_point_id` — `entryPointId` для создания талона в этом отделении
 
 ### Single-branch fallback (обратная совместимость)
 
@@ -125,11 +150,9 @@ ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED={"6":true,"SVR":false}
 
 Приоритет флагов:
 
-1. значение для отделения в `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED`;
-2. иначе глобальный `ORCHESTRA_MULTI_SERVICE_ENABLED`;
-3. если оба отсутствуют — выключено.
-
----
+1. Значение для отделения в `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED`
+2. Иначе глобальный `ORCHESTRA_MULTI_SERVICE_ENABLED`
+3. Если оба отсутствуют — выключено
 
 ## Запуск
 
@@ -154,8 +177,6 @@ docker compose up -d --build
 docker compose logs -f queue-bot
 ```
 
----
-
 ## Тестирование
 
 ```bash
@@ -164,9 +185,7 @@ pytest -q
 
 Тесты покрывают парсинг и валидацию многофилиальной конфигурации (`ORCHESTRA_BRANCHES`) в `branch_config.py`.
 
----
-
-## Архитектура и диаграммы
+## Диаграммы
 
 Диаграммы поддерживаются в двух форматах:
 
@@ -180,32 +199,20 @@ pytest -q
 | Получение талона и уведомление | `docs/diagrams/src/ticket-sequence.puml` | `docs/diagrams/ticket-sequence.svg` |
 | CometD lifecycle и восстановление | `docs/diagrams/src/cometd-sequence.puml` | `docs/diagrams/cometd-sequence.svg` |
 
-### Runtime overview
-
 ![Runtime Overview](docs/diagrams/runtime-overview.svg)
-
-### Network flow
-
 ![Network Flow](docs/diagrams/network-flow.svg)
-
-### Ticket sequence
-
 ![Ticket Sequence](docs/diagrams/ticket-sequence.svg)
 
----
-
-## Рекомендации по безопасности и эксплуатации
+## Безопасность и эксплуатация
 
 - Не публикуйте входящие порты контейнера бота наружу.
 - Используйте polling (без публичного webhook).
 - Разрешайте только необходимый исходящий доступ:
-  - к `api.telegram.org:443`;
-  - к внутренним endpoint Orchestra (REST + CometD).
+  - `api.telegram.org:443`
+  - внутренние endpoint Orchestra (REST + CometD)
 - Не открывайте прямой внешний доступ к БД Orchestra.
 - Храните секреты (`API_TOKEN`, `ORCHESTRA_PASSWORD`) в secret-store/vault или защищённом `.env`.
-- Администрирование — через VPN/jump host/контролируемый админ-контур.
-
----
+- Администрирование выполняйте через VPN / jump host / контролируемый админ-контур.
 
 ## Диагностика и частые проблемы
 
@@ -213,25 +220,25 @@ pytest -q
 
 Проверьте:
 
-- валиден ли JSON в `ORCHESTRA_BRANCHES`;
-- есть ли у каждого отделения `id`, `name`, `prefix`, `entry_point_id`.
+- валиден ли JSON в `ORCHESTRA_BRANCHES`
+- есть ли у каждого отделения `id`, `name`, `prefix`, `entry_point_id`
 
 ### Не создаётся талон
 
 Проверьте:
 
-- корректность `ORCHESTRA_URL`;
-- валидность `ORCHESTRA_LOGIN` / `ORCHESTRA_PASSWORD`;
-- существование `entry_point_id` в Orchestra.
+- корректность `ORCHESTRA_URL`
+- валидность `ORCHESTRA_LOGIN` / `ORCHESTRA_PASSWORD`
+- существование `entry_point_id` в Orchestra
 
 ### Нет уведомлений о вызове
 
 Проверьте:
 
-- доступность CometD endpoint из окружения бота;
-- корректность `prefix` у отделений;
-- что событие действительно `VISIT_CALL`;
-- что `TelegramCustomerId` в событии соответствует пользователю.
+- доступность CometD endpoint из окружения бота
+- корректность `prefix` у отделений
+- что событие действительно `VISIT_CALL`
+- что `TelegramCustomerId` в событии соответствует пользователю
 
 ### Полезные команды
 
@@ -242,3 +249,17 @@ docker compose logs -f queue-bot
 # запуск тестов
 pytest -q
 ```
+
+## FAQ
+
+### Можно ли использовать только одно отделение?
+
+Да. Если не задавать `ORCHESTRA_BRANCHES`, бот работает в fallback-режиме через переменные single-branch конфигурации.
+
+### Что приоритетнее: шаблон по филиалу или общий?
+
+Сначала применяется шаблон филиала из `ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES`, затем общий `VISIT_CALL_TEMPLATE`.
+
+## Лицензия
+
+Проект распространяется по внутренней политике вашей организации. При необходимости добавьте явный файл `LICENSE`.
