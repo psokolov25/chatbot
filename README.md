@@ -56,9 +56,12 @@
 | `ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES` | JSON-объект переопределений шаблона по `branchId` или `prefix` | пусто |
 | `ORCHESTRA_MULTI_SERVICE_ENABLED` | Включить множественный выбор услуг для всех отделений (`true/false`) | `false` |
 | `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED` | JSON-объект переопределений для отделений по `branchId` или `prefix` | пусто |
+| `LOG_LEVEL` | Уровень логирования Python (`DEBUG/INFO/WARNING/ERROR/CRITICAL`) | `INFO` |
 
 Шаблоны поддерживают плейсхолдеры Python `str.format` из полей `prm` события `VISIT_CALL`, например:
 - `{ticketId}`, `{ticket}`, `{servicePointId}`, `{servicePointName}`, `{branchName}`, `{waitingTime}`, `{TelegramCustomerFullName}`.
+
+Для шаблонов приветствия/вызова можно безопасно использовать персональные поля посетителя (например, `{TelegramCustomerFullName}`): при логировании события значения персональных полей маскируются (`***`) и не попадают в логи в открытом виде.
 
 Примеры:
 

@@ -12,11 +12,12 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from branch_config import BranchConfig, parse_branches
+from runtime_config import get_log_level, sanitize_payload
 from visit_message import render_visit_call_message
 
 # Логирование в stdout (Docker friendly)
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=get_log_level(),
     format='%(asctime)s - [%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s',
 )
 
@@ -214,7 +215,7 @@ async def run_cometd_session(bot: Bot, cometd_url: str, channel_subscribe_list: 
                 logging.error("Connect error: %s", e)
                 raise RuntimeError("Connection dropped")
 
-            logging.debug("Connect reply: %s", text)
+            logging.debug("Connect reply received")
 
             try:
                 messages = json.loads(text)
@@ -259,6 +260,7 @@ async def run_cometd_session(bot: Bot, cometd_url: str, channel_subscribe_list: 
                     if event_type == "VISIT_CALL":
                         event_context = E
                         prm = E.get("prm", {})
+                        logging.info("VISIT_CALL payload: %s", sanitize_payload(prm))
                         chat_id = prm.get("TelegramCustomerId")
                         if chat_id:
                             branch_prefix = channel.split("/")[2] if channel and channel.count("/") >= 2 else None
