@@ -390,6 +390,10 @@ def get_single_branch_id() -> int:
     return 0
 
 
+def is_branch_selection_first() -> bool:
+    value = os.getenv("ORCHESTRA_FLOW_ORDER", "ACTION_FIRST").strip().upper()
+    return value in {"BRANCH_FIRST", "BRANCH_THEN_ACTION"}
+
 def get_services_request(branch_id: int):
     url = f'{ORCHESTRA_URL}rest/servicepoint/branches/{branch_id}/services/'
     logging.info("GET services: %s", url)
@@ -463,7 +467,13 @@ def get_services(branch_id: int, selected_ids: Set[int] = None, multi_enabled: b
 async def cmd_start(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer("Добро пожаловать!")
-    await message.answer("Выберите действие:", reply_markup=main_menu_keyboard)
+    if is_branch_selection_first() and len(BRANCHES) > 1:
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="Выбрать отделение", callback_data="choose-branch")],
+        ])
+        await message.answer("Сначала выберите отделение:", reply_markup=keyboard)
+    else:
+        await message.answer("Выберите действие:", reply_markup=main_menu_keyboard)
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith("service:"), state="*")
@@ -520,6 +530,16 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
 async def callbacks(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
     if callback.data == "take-ticket":
+        state_data = await state.get_data()
+        preset_branch_id = int(state_data.get("branch_id", 0) or 0)
+        if preset_branch_id in BRANCH_MAP:
+            await bot.send_message(
+                callback.from_user.id,
+                "Выберите услугу:",
+                reply_markup=get_services(preset_branch_id, set(), is_multi_service_enabled(BRANCH_MAP[preset_branch_id]))[0]
+            )
+            await state.set_state(States.get_ticket)
+            return
         single_branch_id = get_single_branch_id()
         if single_branch_id:
             await state.update_data(branch_id=single_branch_id)
@@ -536,6 +556,13 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
                 reply_markup=get_branches_keyboard()
             )
             await state.set_state(States.branch)
+    elif callback.data == "choose-branch":
+        await bot.send_message(
+            callback.from_user.id,
+            "Выберите отделение:",
+            reply_markup=get_branches_keyboard()
+        )
+        await state.set_state(States.branch)
     elif callback.data.startswith("branch:"):
         branch_id = int(callback.data.split(":")[1])
         if branch_id not in BRANCH_MAP:
@@ -543,12 +570,16 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
             await state.finish()
             return
         await state.update_data(branch_id=branch_id)
-        await bot.send_message(
-            callback.from_user.id,
-            "Выберите услугу:",
-            reply_markup=get_services(branch_id, set(), is_multi_service_enabled(BRANCH_MAP[branch_id]))[0]
-        )
-        await state.set_state(States.get_ticket)
+        if is_branch_selection_first():
+            await bot.send_message(callback.from_user.id, "Выберите действие:", reply_markup=main_menu_keyboard)
+            await state.set_state(States.appointment)
+        else:
+            await bot.send_message(
+                callback.from_user.id,
+                "Выберите услугу:",
+                reply_markup=get_services(branch_id, set(), is_multi_service_enabled(BRANCH_MAP[branch_id]))[0]
+            )
+            await state.set_state(States.get_ticket)
 
 
 # ================================================================
