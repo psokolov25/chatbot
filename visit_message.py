@@ -9,7 +9,15 @@ class SafeTemplateDict(dict):
 
 def render_visit_call_message(template: Optional[str], default_template: str, prm: Mapping, event: Mapping = None) -> str:
     text_template = template or default_template
-    render_data = dict(ChainMap(prm or {}, event or {}))
+    prm_data = dict(prm or {})
+    visitor_id = prm_data.get("TelegramCustomerId")
+    visitor_name = prm_data.get("TelegramCustomerFullName")
+    if visitor_id is not None and "visitorId" not in prm_data:
+        prm_data["visitorId"] = visitor_id
+    if visitor_name is not None and "visitorName" not in prm_data:
+        prm_data["visitorName"] = visitor_name
+
+    render_data = dict(ChainMap(prm_data, event or {}))
     try:
         return text_template.format_map(SafeTemplateDict(render_data))
     except Exception:
