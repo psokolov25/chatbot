@@ -33,8 +33,8 @@ ORCHESTRA_URL = os.getenv('ORCHESTRA_URL', 'http://192.168.0.38:8080/')
 ORCHESTRA_LOGIN = os.getenv('ORCHESTRA_LOGIN', 'superadmin')
 ORCHESTRA_PASSWORD = os.getenv('ORCHESTRA_PASSWORD', 'ulan')
 
-BRANCH_ID = int(os.getenv('BRANCH_ID', '6'))
-ORCHESTRA_ENTRY_POINT_ID = int(os.getenv('ORCHESTRA_ENTRY_POINT_ID', '2'))
+BRANCH_ID = os.getenv('BRANCH_ID', '6')
+ORCHESTRA_ENTRY_POINT_ID = os.getenv('ORCHESTRA_ENTRY_POINT_ID', '2')
 ORCHESTRA_BRANCH_CODE = os.getenv('ORCHESTRA_BRANCH_CODE', 'NTR')
 
 SERVICE_BLACKLIST = {
@@ -42,6 +42,11 @@ SERVICE_BLACKLIST = {
     for name in os.getenv('SERVICE_BLACKLIST', 'Оплата услуг').split(',')
     if name.strip()
 }
+QUEUE_SYSTEM = os.getenv("QUEUE_SYSTEM", "orchestra").strip().lower()
+SYSTEM_BASE_URL = os.getenv("AXIOMA_URL" if QUEUE_SYSTEM == "axioma" else "ORCHESTRA_URL", ORCHESTRA_URL)
+SYSTEM_LOGIN = os.getenv("AXIOMA_LOGIN" if QUEUE_SYSTEM == "axioma" else "ORCHESTRA_LOGIN", ORCHESTRA_LOGIN)
+SYSTEM_PASSWORD = os.getenv("AXIOMA_PASSWORD" if QUEUE_SYSTEM == "axioma" else "ORCHESTRA_PASSWORD", ORCHESTRA_PASSWORD)
+logging.info("Queue system: %s", QUEUE_SYSTEM)
 logging.info("Service blacklist: %s", SERVICE_BLACKLIST)
 DEFAULT_VISIT_CALL_TEMPLATE = os.getenv(
     "VISIT_CALL_TEMPLATE",
@@ -56,13 +61,14 @@ def load_branches() -> List[BranchConfig]:
         default_branch_name=os.getenv("ORCHESTRA_BRANCH_NAME", "Основное отделение"),
         default_branch_code=ORCHESTRA_BRANCH_CODE,
         default_entry_point_id=ORCHESTRA_ENTRY_POINT_ID,
+        default_queue_system=QUEUE_SYSTEM,
         default_visit_call_template=DEFAULT_VISIT_CALL_TEMPLATE,
         branch_visit_call_templates_raw=os.getenv("ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES", ""),
     )
 
 
 BRANCHES = load_branches()
-BRANCH_MAP: Dict[int, BranchConfig] = {b.branch_id: b for b in BRANCHES}
+BRANCH_MAP: Dict[str, BranchConfig] = {b.branch_id: b for b in BRANCHES}
 USER_BRANCH_SUBSCRIPTIONS: Dict[int, Set[str]] = {}
 
 
@@ -72,7 +78,7 @@ USER_BRANCH_SUBSCRIPTIONS: Dict[int, Set[str]] = {}
 class PathOption:
     text: str
     next_question_id: Optional[str] = None
-    service_ids: Optional[List[int]] = None
+    service_ids: Optional[List[str]] = None
     service_names: Optional[List[str]] = None
     multi_services_action: str = "choose"
 
@@ -109,7 +115,7 @@ def _parse_single_client_path(data: dict) -> Optional[ClientPathConfig]:
             text = str(oraw.get("text") or "").strip()
             if not text:
                 continue
-            service_ids = [int(x) for x in oraw.get("services", [])] if isinstance(oraw.get("services"), list) else None
+            service_ids = [str(x) for x in oraw.get("services", [])] if isinstance(oraw.get("services"), list) else None
             service_names = [str(x).strip() for x in oraw.get("service_names", []) if str(x).strip()] if isinstance(oraw.get("service_names"), list) else None
             next_question_id = str(oraw.get("next_question_id")).strip() if oraw.get("next_question_id") else None
             raw_action = str(oraw.get("multi_services_action") or "choose").strip().lower()
@@ -184,9 +190,9 @@ def get_service_name(service: dict) -> str:
     return service.get('internalName') or service.get('name') or str(service.get('id'))
 
 
-def resolve_service_ids_by_names(services: List[dict], names: List[str]) -> List[int]:
+def resolve_service_ids_by_names(services: List[dict], names: List[str]) -> List[str]:
     names_lower = {n.casefold() for n in names}
-    return [int(s['id']) for s in services if get_service_name(s).casefold() in names_lower]
+    return [str(s['id']) for s in services if get_service_name(s).casefold() in names_lower]
 
 
 def build_client_path_keyboard(question: PathQuestion, services: List[dict]) -> InlineKeyboardMarkup:
@@ -195,15 +201,15 @@ def build_client_path_keyboard(question: PathQuestion, services: List[dict]) -> 
         keyboard.add(InlineKeyboardButton(text=option.text, callback_data=f"path:{question.question_id}:{idx}"))
 
     if question.include_other_services_option:
-        used_ids: Set[int] = set()
+        used_ids: Set[str] = set()
         for option in question.options:
             used_ids.update(get_option_service_ids(option, services))
-        if [s for s in services if int(s['id']) not in used_ids]:
+        if [s for s in services if str(s['id']) not in used_ids]:
             keyboard.add(InlineKeyboardButton(text="Другое", callback_data=f"path_other:{question.question_id}"))
     return keyboard
 
 
-def get_option_service_ids(option: PathOption, services: List[dict]) -> List[int]:
+def get_option_service_ids(option: PathOption, services: List[dict]) -> List[str]:
     if option.service_ids:
         return option.service_ids
     if option.service_names:
@@ -226,7 +232,14 @@ cometd_reconnecting = False # флаг: идёт цикл переподключ
 # ================================================================
 #   CometD IMPLEMENTATION (FIX + RECOVERY)
 # ================================================================
-async def run_cometd_session(bot: Bot, cometd_url: str, channel_subscribe_list: List[str], channel_init: str):
+async def run_cometd_session(
+    bot: Bot,
+    cometd_url: str,
+    channel_subscribe_list: List[str],
+    channel_init: str,
+    login: str,
+    password: str,
+):
     """
     Полностью исправленная сессия CometD.
     Реализует новый handshake, subscribe, INIT и бесконечный loop connect.
@@ -234,7 +247,7 @@ async def run_cometd_session(bot: Bot, cometd_url: str, channel_subscribe_list: 
     global last_connect_ok, last_event_received
 
     logging.info("Opening new aiohttp ClientSession() for CometD")
-    auth = aiohttp.BasicAuth(ORCHESTRA_LOGIN, ORCHESTRA_PASSWORD)
+    auth = aiohttp.BasicAuth(login, password)
 
     async with aiohttp.ClientSession(auth=auth) as session:
 
@@ -484,9 +497,12 @@ async def cometd_watchdog(start_callback):
 # MAIN WRAPPER
 # ================================================================
 async def cometd(bot: Bot):
-    cometd_url = f"{ORCHESTRA_URL.rstrip('/')}/cometd"
-    channel_subscribe_list = [f"/events/{branch.prefix}/QVoiceLight" for branch in BRANCHES]
     channel_init = "/events/INIT"
+    grouped_channels: Dict[Tuple[str, str, str], List[str]] = {}
+    for branch in BRANCHES:
+        _, base_url, login, password = get_branch_connection(branch)
+        key = (base_url.rstrip("/"), login, password)
+        grouped_channels.setdefault(key, []).append(f"/events/{branch.prefix}/QVoiceLight")
 
     global cometd_reconnecting, last_connect_ok
 
@@ -496,7 +512,22 @@ async def cometd(bot: Bot):
     while True:
         try:
             cometd_reconnecting = False
-            await run_cometd_session(bot, cometd_url, channel_subscribe_list, channel_init)
+            tasks = []
+            for (base_url, login, password), channel_subscribe_list in grouped_channels.items():
+                cometd_url = f"{base_url}/cometd"
+                tasks.append(
+                    asyncio.create_task(
+                        run_cometd_session(
+                            bot,
+                            cometd_url,
+                            channel_subscribe_list,
+                            channel_init,
+                            login,
+                            password,
+                        )
+                    )
+                )
+            await asyncio.gather(*tasks)
             retry_delay = 2
         except asyncio.CancelledError:
             raise
@@ -531,7 +562,7 @@ def get_branches_keyboard():
     return keyboard
 
 
-def get_single_branch_id() -> int:
+def get_single_branch_id() -> str:
     if len(BRANCHES) == 1:
         return BRANCHES[0].branch_id
     return 0
@@ -541,15 +572,27 @@ def is_branch_selection_first() -> bool:
     value = os.getenv("ORCHESTRA_FLOW_ORDER", "ACTION_FIRST").strip().upper()
     return value in {"BRANCH_FIRST", "BRANCH_THEN_ACTION"}
 
-def get_services_request(branch_id: int):
-    url = f'{ORCHESTRA_URL}rest/servicepoint/branches/{branch_id}/services/'
+def get_services_request(branch: BranchConfig):
+    queue_system, base_url, login, password = get_branch_connection(branch)
+    base = base_url.rstrip('/')
+    if queue_system == 'axioma':
+        branch_id = branch.branch_id
+        url = f'{base}/entrypoint/branches/{branch_id}/services'
+    else:
+        branch_id = branch.branch_id
+        url = f'{base}/rest/servicepoint/branches/{branch_id}/services/'
     logging.info("GET services: %s", url)
-    r = requests.get(url, auth=(ORCHESTRA_LOGIN, ORCHESTRA_PASSWORD))
+    r = requests.get(url, auth=(login, password))
     return r.json()
 
 
-def create_visit(branch_id: int, entry_point_id: int, service_ids: List[int], customer_id: str, customer_name: str):
-    url = f'{ORCHESTRA_URL}rest/entrypoint/branches/{branch_id}/entryPoints/{entry_point_id}/visits/'
+def create_visit(branch: BranchConfig, service_ids: List[str], customer_id: str, customer_name: str):
+    queue_system, base_url, login, password = get_branch_connection(branch)
+    base = base_url.rstrip('/')
+    if queue_system == 'axioma':
+        url = f'{base}/entrypoint/branches/{branch.branch_id}/entry-points/{branch.entry_point_id}/visits'
+    else:
+        url = f'{base}/rest/entrypoint/branches/{branch.branch_id}/entryPoints/{branch.entry_point_id}/visits/'
     data = {
         "services": service_ids,
         "parameters": {
@@ -559,7 +602,7 @@ def create_visit(branch_id: int, entry_point_id: int, service_ids: List[int], cu
     }
     r = requests.post(
         url, json.dumps(data),
-        auth=(ORCHESTRA_LOGIN, ORCHESTRA_PASSWORD),
+        auth=(login, password),
         headers={'Content-type': 'application/json'}
     )
     if r.status_code == 200:
@@ -586,18 +629,18 @@ def is_multi_service_enabled(branch: BranchConfig) -> bool:
     return str(branch_value).lower() in {"1", "true", "yes", "on"}
 
 
-def get_services_data(branch_id: int) -> List[dict]:
-    items = get_services_request(branch_id)
+def get_services_data(branch: BranchConfig) -> List[dict]:
+    items = get_services_request(branch)
     return [
         service for service in items
         if (service.get('internalName') or service.get('name') or str(service.get('id'))) not in SERVICE_BLACKLIST
     ]
 
 
-def build_services_keyboard(services: List[dict], selected_ids: Set[int], multi_enabled: bool) -> InlineKeyboardMarkup:
+def build_services_keyboard(services: List[dict], selected_ids: Set[str], multi_enabled: bool) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup(row_width=2)
     for service in services:
-        service_id = int(service['id'])
+        service_id = str(service['id'])
         name = get_service_name(service)
         prefix = "✅ " if service_id in selected_ids else ""
         keyboard.insert(InlineKeyboardButton(text=f"{prefix}{name}", callback_data=f"service:{service_id}"))
@@ -607,16 +650,16 @@ def build_services_keyboard(services: List[dict], selected_ids: Set[int], multi_
     return keyboard
 
 
-def get_services(branch_id: int, selected_ids: Set[int] = None, multi_enabled: bool = False) -> Tuple[InlineKeyboardMarkup, List[dict]]:
-    services = get_services_data(branch_id)
+def get_services(branch_id: str, selected_ids: Set[str] = None, multi_enabled: bool = False) -> Tuple[InlineKeyboardMarkup, List[dict]]:
+    services = get_services_data(branch)
     return build_services_keyboard(services, selected_ids or set(), multi_enabled), services
 
 
 def get_path_mapped_services(state_data: dict, services: List[dict]) -> List[dict]:
-    mapped_ids = {int(x) for x in state_data.get("path_mapped_service_ids", [])}
+    mapped_ids = {str(x) for x in state_data.get("path_mapped_service_ids", [])}
     if not mapped_ids:
         return services
-    mapped_services = [service for service in services if int(service['id']) in mapped_ids]
+    mapped_services = [service for service in services if str(service['id']) in mapped_ids]
     return mapped_services or services
 @dp.message_handler(commands=["start"])
 async def cmd_start(message: types.Message, state: FSMContext):
@@ -637,7 +680,7 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
 
     state_data = await state.get_data()
-    branch_id = int(state_data.get("branch_id", BRANCH_ID))
+    branch_id = str(state_data.get("branch_id", BRANCH_ID))
     branch = BRANCH_MAP.get(branch_id)
     if not branch:
         await bot.send_message(callback.from_user.id, "Отделение не найдено")
@@ -662,7 +705,7 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
         return
 
     option = question.options[option_idx]
-    services = get_services_data(branch_id)
+    services = get_services_data(branch)
 
     if option.next_question_id:
         next_question = client_path.questions.get(option.next_question_id)
@@ -681,7 +724,7 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
         return
 
     if len(service_ids) > 1 and option.multi_services_action == "auto":
-        visit = create_visit(branch.branch_id, branch.entry_point_id, service_ids, str(callback.from_user.id), callback.from_user.full_name)
+        visit = create_visit(branch, service_ids, str(callback.from_user.id), callback.from_user.full_name)
         if visit:
             ticket = visit.get("ticketId") or visit.get("ticket")
             await bot.send_message(callback.from_user.id, f"Ваш талон: {ticket}")
@@ -692,7 +735,7 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
         return
 
     if len(service_ids) > 1:
-        mapped_services = [service for service in services if int(service['id']) in set(service_ids)]
+        mapped_services = [service for service in services if str(service['id']) in set(service_ids)]
         allow_multi_choice = option.multi_services_action == "choose_many"
         await state.update_data(path_mapped_service_ids=service_ids, selected_service_ids=[], path_allow_multi_choice=allow_multi_choice)
         await bot.send_message(
@@ -703,7 +746,7 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
         await state.set_state(States.get_ticket)
         return
 
-    visit = create_visit(branch.branch_id, branch.entry_point_id, service_ids, str(callback.from_user.id), callback.from_user.full_name)
+    visit = create_visit(branch, service_ids, str(callback.from_user.id), callback.from_user.full_name)
     if visit:
         ticket = visit.get("ticketId") or visit.get("ticket")
         await bot.send_message(callback.from_user.id, f"Ваш талон: {ticket}")
@@ -717,7 +760,7 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
 async def pick_path_other(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
     state_data = await state.get_data()
-    branch_id = int(state_data.get("branch_id", BRANCH_ID))
+    branch_id = str(state_data.get("branch_id", BRANCH_ID))
     branch = BRANCH_MAP.get(branch_id)
     if not branch:
         return
@@ -731,12 +774,12 @@ async def pick_path_other(callback: types.CallbackQuery, state: FSMContext):
         await state.finish()
         return
 
-    services = get_services_data(branch_id)
-    used_ids: Set[int] = set()
+    services = get_services_data(branch)
+    used_ids: Set[str] = set()
     for option in question.options:
         used_ids.update(get_option_service_ids(option, services))
 
-    other_services = [s for s in services if int(s['id']) not in used_ids]
+    other_services = [s for s in services if str(s['id']) not in used_ids]
     if not other_services:
         await bot.send_message(callback.from_user.id, "Других услуг не найдено")
         return
@@ -751,7 +794,7 @@ async def pick_path_other(callback: types.CallbackQuery, state: FSMContext):
 async def pick_service(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
     state_data = await state.get_data()
-    branch_id = int(state_data.get("branch_id", BRANCH_ID))
+    branch_id = str(state_data.get("branch_id", BRANCH_ID))
     branch = BRANCH_MAP.get(branch_id)
     if not branch:
         await bot.send_message(callback.from_user.id, "Отделение не найдено")
@@ -760,10 +803,10 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
 
     path_multi_override = state_data.get("path_allow_multi_choice")
     multi_enabled = bool(path_multi_override) if path_multi_override is not None else is_multi_service_enabled(branch)
-    selected_service_ids = set(state_data.get("selected_service_ids", []))
-    services = get_services_data(branch_id)
+    selected_service_ids = set(str(x) for x in state_data.get("selected_service_ids", []))
+    services = get_services_data(branch)
     available_services = get_path_mapped_services(state_data, services)
-    available_service_ids = {int(service['id']) for service in available_services}
+    available_service_ids = {str(service['id']) for service in available_services}
 
     service_data = callback.data.split(":", 1)[1]
     if service_data == "confirm":
@@ -772,7 +815,7 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
             return
         service_ids = sorted(selected_service_ids)
     else:
-        service_id = int(service_data)
+        service_id = str(service_data)
         if service_id not in available_service_ids:
             await bot.send_message(callback.from_user.id, "Эта услуга недоступна для текущего шага. Выберите из предложенных вариантов.")
             return
@@ -788,8 +831,7 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
         service_ids = [service_id]
 
     visit = create_visit(
-        branch.branch_id,
-        branch.entry_point_id,
+        branch,
         service_ids,
         str(callback.from_user.id),
         callback.from_user.full_name,
@@ -809,12 +851,12 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
     if callback.data == "take-ticket":
         state_data = await state.get_data()
-        preset_branch_id = int(state_data.get("branch_id", 0) or 0)
+        preset_branch_id = str(state_data.get("branch_id", "") or "")
         if preset_branch_id in BRANCH_MAP:
             client_path = get_client_path_for_branch(BRANCH_MAP[preset_branch_id])
             if client_path:
                 root_question = client_path.questions[client_path.root_question_id]
-                services = get_services_data(preset_branch_id)
+                services = get_services_data(BRANCH_MAP[preset_branch_id])
                 await state.update_data(path_question_id=root_question.question_id)
                 await bot.send_message(callback.from_user.id, root_question.text, reply_markup=build_client_path_keyboard(root_question, services))
             else:
@@ -831,7 +873,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
             client_path = get_client_path_for_branch(BRANCH_MAP[single_branch_id])
             if client_path:
                 root_question = client_path.questions[client_path.root_question_id]
-                services = get_services_data(single_branch_id)
+                services = get_services_data(BRANCH_MAP[single_branch_id])
                 await state.update_data(path_question_id=root_question.question_id)
                 await bot.send_message(callback.from_user.id, root_question.text, reply_markup=build_client_path_keyboard(root_question, services))
             else:
@@ -856,7 +898,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
         )
         await state.set_state(States.branch)
     elif callback.data.startswith("branch:"):
-        branch_id = int(callback.data.split(":")[1])
+        branch_id = callback.data.split(":", 1)[1]
         if branch_id not in BRANCH_MAP:
             await bot.send_message(callback.from_user.id, "Не удалось выбрать отделение")
             await state.finish()
@@ -869,7 +911,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
             client_path = get_client_path_for_branch(BRANCH_MAP[branch_id])
             if client_path:
                 root_question = client_path.questions[client_path.root_question_id]
-                services = get_services_data(branch_id)
+                services = get_services_data(branch)
                 await state.update_data(path_question_id=root_question.question_id)
                 await bot.send_message(callback.from_user.id, root_question.text, reply_markup=build_client_path_keyboard(root_question, services))
             else:
