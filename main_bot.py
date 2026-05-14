@@ -753,7 +753,13 @@ def create_visit(branch: BranchConfig, service_ids: List[str], customer_id: str,
     if queue_system == 'axioma':
         url = f'{base}/entrypoint/branches/{branch.branch_id}/entry-points/{branch.entry_point_id}/visits'
         params = {"printTicket": "false"}
-        payload = service_ids
+        payload = {
+            "services": service_ids,
+            "parameters": {
+                "TelegramCustomerId": customer_id,
+                "TelegramCustomerFullName": customer_name,
+            },
+        }
     else:
         url = f'{base}/rest/entrypoint/branches/{branch.branch_id}/entryPoints/{branch.entry_point_id}/visits/'
         params = None
