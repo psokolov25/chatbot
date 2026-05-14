@@ -4,7 +4,7 @@
 
 journeys:
   # Пример 1: Банк (например, Сбербанк Минск)
-  - branches: ["6", "NTR", "Сбербанк Минск"]
+  - branches: ["7", "SBR", "Сбербанк Минск"]
     root_question_id: bank_q1
     questions:
       bank_q1:
@@ -81,7 +81,7 @@ journeys:
             service_names: ["Карты"]
 
   # Пример 2: Нотариус
-  - branches: ["7", "NOTARY", "Нотариус"]
+  - branches: ["6", "NTR", "Нотариус"]
     root_question_id: notary_q1
     questions:
       notary_q1:
