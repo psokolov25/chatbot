@@ -496,6 +496,41 @@ async def cometd_watchdog(start_callback):
 # ================================================================
 # MAIN WRAPPER
 # ================================================================
+async def run_cometd_group_forever(
+    bot: Bot,
+    cometd_url: str,
+    channel_subscribe_list: List[str],
+    channel_init: str,
+    login: str,
+    password: str,
+):
+    retry_delay = 2
+    max_retry_delay = 60
+
+    global cometd_reconnecting, last_connect_ok
+
+    while True:
+        try:
+            await run_cometd_session(
+                bot,
+                cometd_url,
+                channel_subscribe_list,
+                channel_init,
+                login,
+                password,
+            )
+            retry_delay = 2
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            # Ошибка одной CometD-группы не должна ронять остальные.
+            cometd_reconnecting = True
+            last_connect_ok = 0
+            logging.exception("CometD group %s ended, will reconnect in %ss: %s", cometd_url, retry_delay, exc)
+            await asyncio.sleep(retry_delay)
+            retry_delay = min(retry_delay * 2, max_retry_delay)
+
+
 async def cometd(bot: Bot):
     channel_init = "/events/INIT"
     grouped_channels: Dict[Tuple[str, str, str], List[str]] = {}
@@ -504,40 +539,26 @@ async def cometd(bot: Bot):
         key = (base_url.rstrip("/"), login, password)
         grouped_channels.setdefault(key, []).append(f"/events/{branch.prefix}/QVoiceLight")
 
-    global cometd_reconnecting, last_connect_ok
+    global cometd_reconnecting
 
-    retry_delay = 2
-    max_retry_delay = 60
-
-    while True:
-        try:
-            cometd_reconnecting = False
-            tasks = []
-            for (base_url, login, password), channel_subscribe_list in grouped_channels.items():
-                cometd_url = f"{base_url}/cometd"
-                tasks.append(
-                    asyncio.create_task(
-                        run_cometd_session(
-                            bot,
-                            cometd_url,
-                            channel_subscribe_list,
-                            channel_init,
-                            login,
-                            password,
-                        )
-                    )
+    cometd_reconnecting = False
+    tasks = []
+    for (base_url, login, password), channel_subscribe_list in grouped_channels.items():
+        cometd_url = f"{base_url}/cometd"
+        tasks.append(
+            asyncio.create_task(
+                run_cometd_group_forever(
+                    bot,
+                    cometd_url,
+                    channel_subscribe_list,
+                    channel_init,
+                    login,
+                    password,
                 )
-            await asyncio.gather(*tasks)
-            retry_delay = 2
-        except asyncio.CancelledError:
-            raise
-        except Exception as exc:
-            # connect-сессия завершилась: переходим в режим controlled reconnect
-            cometd_reconnecting = True
-            last_connect_ok = 0
-            logging.exception("CometD session ended, will reconnect in %ss: %s", retry_delay, exc)
-            await asyncio.sleep(retry_delay)
-            retry_delay = min(retry_delay * 2, max_retry_delay)
+            )
+        )
+
+    await asyncio.gather(*tasks)
 
 
 # ================================================================
@@ -611,13 +632,21 @@ def create_visit(branch: BranchConfig, service_ids: List[str], customer_id: str,
             "TelegramCustomerFullName": customer_name,
         }
     }
+    logging.info("POST create visit: %s payload=%s", url, data)
     r = requests.post(
         url, json.dumps(data),
         auth=(login, password),
         headers={'Content-type': 'application/json'}
     )
-    if r.status_code == 200:
-        return r.json()
+
+    if r.status_code in (200, 201):
+        try:
+            return r.json()
+        except ValueError:
+            logging.error("Create visit response is not JSON. status=%s body=%s", r.status_code, r.text)
+            return None
+
+    logging.error("Create visit failed. status=%s body=%s", r.status_code, r.text)
     return None
 
 
