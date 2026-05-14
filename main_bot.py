@@ -2,7 +2,10 @@ import asyncio
 import json
 import logging
 import os
-from typing import Dict, List, Set, Tuple
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Set, Tuple
+
+import yaml
 
 import requests
 import aiohttp
@@ -62,6 +65,139 @@ BRANCHES = load_branches()
 BRANCH_MAP: Dict[int, BranchConfig] = {b.branch_id: b for b in BRANCHES}
 USER_BRANCH_SUBSCRIPTIONS: Dict[int, Set[str]] = {}
 
+
+
+
+@dataclass
+class PathOption:
+    text: str
+    next_question_id: Optional[str] = None
+    service_ids: Optional[List[int]] = None
+    service_names: Optional[List[str]] = None
+
+
+@dataclass
+class PathQuestion:
+    question_id: str
+    text: str
+    options: List[PathOption]
+    include_other_services_option: bool = False
+
+
+@dataclass
+class ClientPathConfig:
+    root_question_id: str
+    questions: Dict[str, PathQuestion]
+
+
+def _parse_single_client_path(data: dict) -> Optional[ClientPathConfig]:
+    root_question_id = str(data.get("root_question_id") or "").strip()
+    questions_raw = data.get("questions") or {}
+    if not root_question_id or not isinstance(questions_raw, dict):
+        return None
+
+    questions: Dict[str, PathQuestion] = {}
+    for qid, qraw in questions_raw.items():
+        qid_str = str(qid)
+        if not isinstance(qraw, dict):
+            continue
+        options: List[PathOption] = []
+        for oraw in (qraw.get("options") or []):
+            if not isinstance(oraw, dict):
+                continue
+            text = str(oraw.get("text") or "").strip()
+            if not text:
+                continue
+            service_ids = [int(x) for x in oraw.get("services", [])] if isinstance(oraw.get("services"), list) else None
+            service_names = [str(x).strip() for x in oraw.get("service_names", []) if str(x).strip()] if isinstance(oraw.get("service_names"), list) else None
+            next_question_id = str(oraw.get("next_question_id")).strip() if oraw.get("next_question_id") else None
+            options.append(PathOption(text=text, next_question_id=next_question_id, service_ids=service_ids, service_names=service_names))
+
+        text = str(qraw.get("text") or "").strip()
+        if text and options:
+            questions[qid_str] = PathQuestion(
+                question_id=qid_str,
+                text=text,
+                options=options,
+                include_other_services_option=bool(qraw.get("include_other_services_option", False)),
+            )
+
+    if root_question_id not in questions:
+        return None
+    return ClientPathConfig(root_question_id=root_question_id, questions=questions)
+
+
+def load_client_paths() -> Dict[str, ClientPathConfig]:
+    path = os.getenv("CLIENT_PATH_YAML", "client_path.yml")
+    if not os.path.exists(path):
+        logging.info("Client path config is not found: %s", path)
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            data = yaml.safe_load(file) or {}
+    except Exception:
+        logging.exception("Failed to load client path yaml: %s", path)
+        return {}
+
+    result: Dict[str, ClientPathConfig] = {}
+    journeys = data.get("journeys")
+    if isinstance(journeys, list):
+        for idx, journey in enumerate(journeys):
+            if not isinstance(journey, dict):
+                continue
+            cfg = _parse_single_client_path(journey)
+            if not cfg:
+                continue
+            for branch_key in journey.get("branches", []):
+                key = str(branch_key).strip()
+                if key:
+                    result[key] = cfg
+            if journey.get("default") is True:
+                result["default"] = cfg
+    else:
+        cfg = _parse_single_client_path(data)
+        if cfg:
+            result["default"] = cfg
+
+    return result
+
+
+CLIENT_PATHS = load_client_paths()
+
+
+def get_client_path_for_branch(branch: BranchConfig) -> Optional[ClientPathConfig]:
+    return CLIENT_PATHS.get(str(branch.branch_id)) or CLIENT_PATHS.get(branch.prefix) or CLIENT_PATHS.get(branch.name) or CLIENT_PATHS.get("default")
+
+
+def get_service_name(service: dict) -> str:
+    return service.get('internalName') or service.get('name') or str(service.get('id'))
+
+
+def resolve_service_ids_by_names(services: List[dict], names: List[str]) -> List[int]:
+    names_lower = {n.casefold() for n in names}
+    return [int(s['id']) for s in services if get_service_name(s).casefold() in names_lower]
+
+
+def build_client_path_keyboard(question: PathQuestion, services: List[dict]) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup(row_width=1)
+    for idx, option in enumerate(question.options):
+        keyboard.add(InlineKeyboardButton(text=option.text, callback_data=f"path:{question.question_id}:{idx}"))
+
+    if question.include_other_services_option:
+        used_ids: Set[int] = set()
+        for option in question.options:
+            used_ids.update(get_option_service_ids(option, services))
+        if [s for s in services if int(s['id']) not in used_ids]:
+            keyboard.add(InlineKeyboardButton(text="Другое", callback_data=f"path_other:{question.question_id}"))
+    return keyboard
+
+
+def get_option_service_ids(option: PathOption, services: List[dict]) -> List[int]:
+    if option.service_ids:
+        return option.service_ids
+    if option.service_names:
+        return resolve_service_ids_by_names(services, option.service_names)
+    return []
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -451,7 +587,7 @@ def build_services_keyboard(services: List[dict], selected_ids: Set[int], multi_
     keyboard = InlineKeyboardMarkup(row_width=2)
     for service in services:
         service_id = int(service['id'])
-        name = service.get('internalName') or service.get('name') or str(service_id)
+        name = get_service_name(service)
         prefix = "✅ " if service_id in selected_ids else ""
         keyboard.insert(InlineKeyboardButton(text=f"{prefix}{name}", callback_data=f"service:{service_id}"))
 
@@ -474,6 +610,98 @@ async def cmd_start(message: types.Message, state: FSMContext):
         await message.answer("Сначала выберите отделение:", reply_markup=keyboard)
     else:
         await message.answer("Выберите действие:", reply_markup=main_menu_keyboard)
+
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith("path:"), state="*")
+async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
+    await callback.answer()
+
+    state_data = await state.get_data()
+    branch_id = int(state_data.get("branch_id", BRANCH_ID))
+    branch = BRANCH_MAP.get(branch_id)
+    if not branch:
+        await bot.send_message(callback.from_user.id, "Отделение не найдено")
+        await state.finish()
+        return
+
+    client_path = get_client_path_for_branch(branch)
+    if not client_path:
+        await bot.send_message(callback.from_user.id, "Сценарий клиента для отделения не настроен")
+        return
+
+    _, question_id, option_idx_raw = callback.data.split(":", 2)
+    question = client_path.questions.get(question_id)
+    if not question:
+        await bot.send_message(callback.from_user.id, "Маршрут клиента устарел, начните заново")
+        await state.finish()
+        return
+
+    option_idx = int(option_idx_raw)
+    if option_idx < 0 or option_idx >= len(question.options):
+        await bot.send_message(callback.from_user.id, "Некорректный вариант ответа")
+        return
+
+    option = question.options[option_idx]
+    services = get_services_data(branch_id)
+
+    if option.next_question_id:
+        next_question = client_path.questions.get(option.next_question_id)
+        if not next_question:
+            await bot.send_message(callback.from_user.id, "Маршрут клиента настроен неверно")
+            await state.finish()
+            return
+        await state.update_data(path_question_id=next_question.question_id)
+        await bot.send_message(callback.from_user.id, next_question.text, reply_markup=build_client_path_keyboard(next_question, services))
+        await state.set_state(States.get_ticket)
+        return
+
+    service_ids = get_option_service_ids(option, services)
+    if not service_ids:
+        await bot.send_message(callback.from_user.id, "Для этого варианта не настроены услуги")
+        return
+
+    visit = create_visit(branch.branch_id, branch.entry_point_id, service_ids, str(callback.from_user.id), callback.from_user.full_name)
+    if visit:
+        ticket = visit.get("ticketId") or visit.get("ticket")
+        await bot.send_message(callback.from_user.id, f"Ваш талон: {ticket}")
+        USER_BRANCH_SUBSCRIPTIONS.setdefault(callback.from_user.id, set()).add(branch.prefix)
+        await state.finish()
+    else:
+        await bot.send_message(callback.from_user.id, "Ошибка создания талона")
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith("path_other:"), state="*")
+async def pick_path_other(callback: types.CallbackQuery, state: FSMContext):
+    await callback.answer()
+    state_data = await state.get_data()
+    branch_id = int(state_data.get("branch_id", BRANCH_ID))
+    branch = BRANCH_MAP.get(branch_id)
+    if not branch:
+        return
+    client_path = get_client_path_for_branch(branch)
+    if not client_path:
+        return
+    question_id = callback.data.split(":", 1)[1]
+    question = client_path.questions.get(question_id)
+    if not question:
+        await bot.send_message(callback.from_user.id, "Маршрут клиента устарел, начните заново")
+        await state.finish()
+        return
+
+    services = get_services_data(branch_id)
+    used_ids: Set[int] = set()
+    for option in question.options:
+        used_ids.update(get_option_service_ids(option, services))
+
+    other_services = [s for s in services if int(s['id']) not in used_ids]
+    if not other_services:
+        await bot.send_message(callback.from_user.id, "Других услуг не найдено")
+        return
+
+    branch = BRANCH_MAP.get(branch_id)
+    await bot.send_message(callback.from_user.id, "Выберите услугу:", reply_markup=build_services_keyboard(other_services, set(), is_multi_service_enabled(branch)))
+    await state.set_state(States.get_ticket)
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith("service:"), state="*")
@@ -533,21 +761,35 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
         state_data = await state.get_data()
         preset_branch_id = int(state_data.get("branch_id", 0) or 0)
         if preset_branch_id in BRANCH_MAP:
-            await bot.send_message(
-                callback.from_user.id,
-                "Выберите услугу:",
-                reply_markup=get_services(preset_branch_id, set(), is_multi_service_enabled(BRANCH_MAP[preset_branch_id]))[0]
-            )
+            client_path = get_client_path_for_branch(BRANCH_MAP[preset_branch_id])
+            if client_path:
+                root_question = client_path.questions[client_path.root_question_id]
+                services = get_services_data(preset_branch_id)
+                await state.update_data(path_question_id=root_question.question_id)
+                await bot.send_message(callback.from_user.id, root_question.text, reply_markup=build_client_path_keyboard(root_question, services))
+            else:
+                await bot.send_message(
+                    callback.from_user.id,
+                    "Выберите услугу:",
+                    reply_markup=get_services(preset_branch_id, set(), is_multi_service_enabled(BRANCH_MAP[preset_branch_id]))[0]
+                )
             await state.set_state(States.get_ticket)
             return
         single_branch_id = get_single_branch_id()
         if single_branch_id:
             await state.update_data(branch_id=single_branch_id)
-            await bot.send_message(
-                callback.from_user.id,
-                "Выберите услугу:",
-                reply_markup=get_services(single_branch_id, set(), is_multi_service_enabled(BRANCH_MAP[single_branch_id]))[0]
-            )
+            client_path = get_client_path_for_branch(BRANCH_MAP[single_branch_id])
+            if client_path:
+                root_question = client_path.questions[client_path.root_question_id]
+                services = get_services_data(single_branch_id)
+                await state.update_data(path_question_id=root_question.question_id)
+                await bot.send_message(callback.from_user.id, root_question.text, reply_markup=build_client_path_keyboard(root_question, services))
+            else:
+                await bot.send_message(
+                    callback.from_user.id,
+                    "Выберите услугу:",
+                    reply_markup=get_services(single_branch_id, set(), is_multi_service_enabled(BRANCH_MAP[single_branch_id]))[0]
+                )
             await state.set_state(States.get_ticket)
         else:
             await bot.send_message(
@@ -574,11 +816,18 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
             await bot.send_message(callback.from_user.id, "Выберите действие:", reply_markup=main_menu_keyboard)
             await state.set_state(States.appointment)
         else:
-            await bot.send_message(
-                callback.from_user.id,
-                "Выберите услугу:",
-                reply_markup=get_services(branch_id, set(), is_multi_service_enabled(BRANCH_MAP[branch_id]))[0]
-            )
+            client_path = get_client_path_for_branch(BRANCH_MAP[branch_id])
+            if client_path:
+                root_question = client_path.questions[client_path.root_question_id]
+                services = get_services_data(branch_id)
+                await state.update_data(path_question_id=root_question.question_id)
+                await bot.send_message(callback.from_user.id, root_question.text, reply_markup=build_client_path_keyboard(root_question, services))
+            else:
+                await bot.send_message(
+                    callback.from_user.id,
+                    "Выберите услугу:",
+                    reply_markup=get_services(branch_id, set(), is_multi_service_enabled(BRANCH_MAP[branch_id]))[0]
+                )
             await state.set_state(States.get_ticket)
 
 
