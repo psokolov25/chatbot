@@ -1,0 +1,197 @@
+# Маршруты клиента по отделениям.
+# Один маршрут можно назначить на одно или несколько отделений через branches.
+# branches: список branch_id, prefix или точного имени отделения.
+
+journeys:
+  # Пример 1: Банк (например, Сбербанк Минск)
+  - branches: ["6", "NTR", "Сбербанк Минск"]
+    root_question_id: bank_q1
+    questions:
+      bank_q1:
+        text: "Что вы хотите сделать в банке?"
+        options:
+          - text: "Работа с деньгами"
+            next_question_id: bank_q2_money
+          - text: "Оформление продуктов"
+            next_question_id: bank_q2_products
+          - text: "Консультации"
+            next_question_id: bank_q2_consult
+
+      bank_q2_money:
+        text: "Выберите тип операции с деньгами"
+        options:
+          - text: "Внести или снять наличные"
+            next_question_id: bank_q3_cash
+          - text: "Разместить накопления"
+            next_question_id: bank_q3_deposit
+
+      bank_q3_cash:
+        text: "Уточните операцию по кассе"
+        include_other_services_option: true
+        options:
+          - text: "Кассовые операции"
+            service_names: ["Касса"]
+          - text: "Валютно-обменные операции"
+            service_names: ["Обмен валют", "Касса"]
+
+      bank_q3_deposit:
+        text: "Какой продукт вас интересует?"
+        include_other_services_option: true
+        options:
+          - text: "Открыть депозит"
+            service_names: ["Депозиты"]
+          - text: "Инвестиционные решения"
+            service_names: ["Инвестиции"]
+
+      bank_q2_products:
+        text: "Какой продукт хотите оформить?"
+        options:
+          - text: "Карточный продукт"
+            next_question_id: bank_q3_cards
+          - text: "Кредитный продукт"
+            next_question_id: bank_q3_loans
+
+      bank_q3_cards:
+        text: "Уточните тип карточного вопроса"
+        include_other_services_option: true
+        options:
+          - text: "Оформить карту"
+            service_names: ["Карты"]
+          - text: "Перевыпуск/обслуживание карты"
+            service_names: ["Карты"]
+
+      bank_q3_loans:
+        text: "Какой вопрос по кредиту?"
+        include_other_services_option: true
+        options:
+          - text: "Новый кредит"
+            service_names: ["Кредиты"]
+          - text: "Рефинансирование"
+            service_names: ["Кредиты"]
+
+      bank_q2_consult:
+        text: "Какая консультация нужна?"
+        include_other_services_option: true
+        options:
+          - text: "По инвестициям"
+            service_names: ["Инвестиции"]
+          - text: "По депозитам"
+            service_names: ["Депозиты"]
+          - text: "По картам"
+            service_names: ["Карты"]
+
+  # Пример 2: Нотариус
+  - branches: ["7", "NOTARY", "Нотариус"]
+    root_question_id: notary_q1
+    questions:
+      notary_q1:
+        text: "По какому вопросу вы обратились?"
+        options:
+          - text: "Документы"
+            next_question_id: notary_q2_docs
+          - text: "Сделки и имущество"
+            next_question_id: notary_q2_deals
+          - text: "Наследство"
+            next_question_id: notary_q2_inheritance
+
+      notary_q2_docs:
+        text: "Выберите тип документа"
+        options:
+          - text: "Доверенности"
+            next_question_id: notary_q3_power
+          - text: "Заверение копий/подписей"
+            next_question_id: notary_q3_cert
+
+      notary_q3_power:
+        text: "Уточните вид доверенности"
+        include_other_services_option: true
+        options:
+          - text: "Разовая доверенность"
+            service_names: ["Доверенности"]
+          - text: "Генеральная доверенность"
+            service_names: ["Доверенности"]
+
+      notary_q3_cert:
+        text: "Какое заверение требуется?"
+        include_other_services_option: true
+        options:
+          - text: "Заверение подписи"
+            service_names: ["Заверение документов"]
+          - text: "Заверение копии"
+            service_names: ["Заверение документов"]
+
+      notary_q2_deals:
+        text: "Какой тип сделки?"
+        include_other_services_option: true
+        options:
+          - text: "Сделка с недвижимостью"
+            service_names: ["Сделки"]
+          - text: "Сделка с долями/имуществом"
+            service_names: ["Сделки"]
+
+      notary_q2_inheritance:
+        text: "Что нужно по наследству?"
+        include_other_services_option: true
+        options:
+          - text: "Открытие наследственного дела"
+            service_names: ["Наследственные дела"]
+          - text: "Сопровождение наследственного дела"
+            service_names: ["Наследственные дела"]
+
+  # Fallback-маршрут для остальных отделений
+  - default: true
+    root_question_id: default_q1
+    questions:
+      default_q1:
+        text: "С какой целью обращаетесь?"
+        options:
+          - text: "Консультация"
+            next_question_id: default_q2_consult
+          - text: "Оформление документов"
+            next_question_id: default_q2_docs
+          - text: "Оплата"
+            next_question_id: default_q2_payment
+
+      default_q2_consult:
+        text: "Какой тип консультации нужен?"
+        options:
+          - text: "Юридическая"
+            next_question_id: default_q3_legal
+          - text: "Техническая"
+            next_question_id: default_q3_tech
+
+      default_q3_legal:
+        text: "Уточните тему юридической консультации"
+        include_other_services_option: true
+        options:
+          - text: "Договоры"
+            service_names: ["Юридическая консультация"]
+          - text: "Претензии и споры"
+            service_names: ["Юридическая консультация"]
+
+      default_q3_tech:
+        text: "Уточните тему технической консультации"
+        include_other_services_option: true
+        options:
+          - text: "Подключение сервисов"
+            service_names: ["Техподдержка"]
+          - text: "Проблемы в работе сервисов"
+            service_names: ["Техподдержка"]
+
+      default_q2_docs:
+        text: "Какой документ хотите оформить?"
+        include_other_services_option: true
+        options:
+          - text: "Типовой документ"
+            service_names: ["Оформление документов"]
+          - text: "Индивидуальный документ"
+            service_names: ["Оформление документов"]
+
+      default_q2_payment:
+        text: "Что хотите оплатить?"
+        include_other_services_option: true
+        options:
+          - text: "Оплата услуги"
+            service_names: ["Оплата услуг"]
+          - text: "Оплата госпошлины"
+            service_names: ["Оплата услуг"]
