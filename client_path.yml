@@ -211,3 +211,34 @@ journeys:
             service_names: ["Оплата услуг"]
           - text: "Оплата госпошлины"
             service_names: ["Оплата услуг"]
+
+  # Пример 3: Axioma (Банк "Дубна")
+  - branches: ["cd842979-3dc1-4505-a1ae-9a92f0622da2", "DUB", "Банк \"Дубна\""]
+    root_question_id: axioma_q1
+    questions:
+      axioma_q1:
+        text: "Какой продукт вас интересует?"
+        options:
+          - text: "Кредитные карты"
+            next_question_id: axioma_q2_credit
+          - text: "Дебетовые карты"
+            next_question_id: axioma_q2_debit
+
+      axioma_q2_credit:
+        text: "Что нужно по кредитной карте?"
+        include_other_services_option: true
+        options:
+          - text: "Оформление/выпуск"
+            service_names: ["Выпуск кредитной карты"]
+          - text: "Проверка кредитной истории"
+            service_names: ["Выпуск кредитной карты"]
+
+      axioma_q2_debit:
+        text: "Что нужно по дебетовой карте?"
+        include_other_services_option: true
+        options:
+          - text: "Выпуск дебетовой карты"
+            service_names: ["Выпуск дебетовой карты"]
+          - text: "Консультация и оформление"
+            service_names: ["Выпуск дебетовой карты", "Выпуск кредитной карты"]
+            multi_services_action: choose_many

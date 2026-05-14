@@ -5,7 +5,7 @@
 [![Tests](https://img.shields.io/badge/tests-pytest-0A9EDC?logo=pytest&logoColor=white)](#тестирование)
 [![License](https://img.shields.io/badge/license-Internal-lightgrey)](#лицензия)
 
-Telegram-бот электронной очереди для Orchestra, который помогает клиенту взять талон и получить персональное уведомление о вызове.
+Telegram-бот электронной очереди с переключаемым провайдером (Orchestra или Axioma), который помогает клиенту взять талон и получить персональное уведомление о вызове.
 
 ---
 
@@ -66,7 +66,10 @@ cp .env.example .env
 python main_bot.py
 ```
 
-Минимально нужны: `API_TOKEN`, `ORCHESTRA_URL`, `ORCHESTRA_LOGIN`, `ORCHESTRA_PASSWORD`.
+Минимально нужны: `API_TOKEN`, `QUEUE_SYSTEM`, URL и креды выбранной СУО.
+
+Пример можно взять из `.env.example`, включая тестовый адрес Axioma:
+`http://192.168.8.40:8080/`.
 
 ## Конфигурация
 
@@ -75,9 +78,11 @@ python main_bot.py
 | Переменная | Назначение |
 |---|---|
 | `API_TOKEN` | Токен Telegram-бота |
-| `ORCHESTRA_URL` | Базовый URL Orchestra |
-| `ORCHESTRA_LOGIN` | Логин Orchestra |
-| `ORCHESTRA_PASSWORD` | Пароль Orchestra |
+| `QUEUE_SYSTEM` | Тип СУО: `orchestra` или `axioma` |
+| `ORCHESTRA_URL` / `AXIOMA_URL` | Базовый URL выбранной СУО |
+| `ORCHESTRA_LOGIN` / `AXIOMA_LOGIN` | Логин выбранной СУО |
+| `ORCHESTRA_PASSWORD` / `AXIOMA_PASSWORD` | Пароль выбранной СУО |
+| `ORCHESTRA_BRANCHES` | JSON-массив отделений (у каждого можно указать свою СУО и свой сервер) |
 
 ### Дополнительные переменные
 
@@ -119,8 +124,8 @@ ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES={"6":"Нотариус: талон {ticket
 
 ```json
 [
-  {"id": 6, "name": "Центральное отделение", "prefix": "NTR", "entry_point_id": 2},
-  {"id": 7, "name": "Северное отделение", "prefix": "SVR", "entry_point_id": 3}
+  {"id": 6, "name": "Центральное отделение", "prefix": "NTR", "entry_point_id": 2, "queue_system": "orchestra"},
+  {"id": "cd842979-3dc1-4505-a1ae-9a92f0622da2", "name": "Банк Дубна", "prefix": "DUB", "entry_point_id": "f7ff91a7-a2a7-4b90-adaf-b2d38a24e0f2", "queue_system": "axioma", "base_url": "http://axioma:8080", "login": "superadmin", "password": "secret"}
 ]
 ```
 
@@ -130,6 +135,8 @@ ORCHESTRA_BRANCH_VISIT_CALL_TEMPLATES={"6":"Нотариус: талон {ticket
 - `name` — отображаемое имя кнопки в Telegram
 - `prefix` — префикс CometD-канала (`/events/{prefix}/QVoiceLight`)
 - `entry_point_id` — `entryPointId` для создания талона в этом отделении
+- `queue_system` — тип СУО для конкретного отделения: `orchestra` или `axioma`
+- `base_url`, `login`, `password` — опционально, переопределяют сервер и учётку для конкретного отделения
 
 ### Single-branch fallback (обратная совместимость)
 

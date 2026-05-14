@@ -5,10 +5,14 @@ from typing import Dict, List, Optional
 
 @dataclass(frozen=True)
 class BranchConfig:
-    branch_id: int
+    branch_id: str
     name: str
     prefix: str
-    entry_point_id: int
+    entry_point_id: str
+    queue_system: str = "orchestra"
+    base_url: Optional[str] = None
+    login: Optional[str] = None
+    password: Optional[str] = None
     visit_call_template: Optional[str] = None
 
 
@@ -23,10 +27,11 @@ def validate_branches(branches: List[BranchConfig]) -> None:
 
 def parse_branches(
     branches_raw: str,
-    default_branch_id: int,
+    default_branch_id: str,
     default_branch_name: str,
     default_branch_code: str,
-    default_entry_point_id: int,
+    default_entry_point_id: str,
+    default_queue_system: str = "orchestra",
     default_visit_call_template: Optional[str] = None,
     branch_visit_call_templates_raw: str = "",
 ) -> List[BranchConfig]:
@@ -44,10 +49,14 @@ def parse_branches(
             raise ValueError("ORCHESTRA_BRANCHES must be a non-empty JSON array")
         branches = [
             BranchConfig(
-                branch_id=int(item["id"]),
+                branch_id=str(item["id"]),
                 name=str(item["name"]),
                 prefix=str(item["prefix"]),
-                entry_point_id=int(item["entry_point_id"]),
+                entry_point_id=str(item["entry_point_id"]),
+                queue_system=str(item.get("queue_system", "orchestra")).strip().lower() or "orchestra",
+                base_url=str(item["base_url"]).strip() if item.get("base_url") is not None else None,
+                login=str(item["login"]).strip() if item.get("login") is not None else None,
+                password=str(item["password"]).strip() if item.get("password") is not None else None,
                 visit_call_template=item.get("visit_call_template"),
             )
             for item in parsed
@@ -59,6 +68,7 @@ def parse_branches(
                 name=default_branch_name,
                 prefix=default_branch_code,
                 entry_point_id=default_entry_point_id,
+                queue_system=default_queue_system,
                 visit_call_template=default_visit_call_template,
             )
         ]
@@ -74,6 +84,10 @@ def parse_branches(
                     name=branch.name,
                     prefix=branch.prefix,
                     entry_point_id=branch.entry_point_id,
+                    queue_system=branch.queue_system,
+                    base_url=branch.base_url,
+                    login=branch.login,
+                    password=branch.password,
                     visit_call_template=str(override),
                 )
 
