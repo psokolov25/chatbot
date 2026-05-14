@@ -50,7 +50,7 @@ logging.info("Queue system: %s", QUEUE_SYSTEM)
 logging.info("Service blacklist: %s", SERVICE_BLACKLIST)
 DEFAULT_VISIT_CALL_TEMPLATE = os.getenv(
     "VISIT_CALL_TEMPLATE",
-    "Уважаемый клиент! Вы вызваны к специалисту. Обратите внимание на ТВ-панель. Заранее спасибо!",
+    "🔔 {visitorName}, ваш талон {ticketId}! Подойдите к окну {servicePointName}.",
 )
 
 
@@ -428,14 +428,14 @@ async def process_visit_call_event(bot: Bot, data: dict, branch_prefix: str = No
 
     prm = event_context.get("prm", {})
     logging.info("VISIT_CALL payload: %s", sanitize_payload(prm))
-    chat_id = prm.get("TelegramCustomerId")
+    chat_id = prm.get("TelegramChatId") or prm.get("TelegramCustomerId")
     if not chat_id:
         return
 
     try:
         chat_id_int = int(chat_id)
     except (TypeError, ValueError):
-        logging.warning("VISIT_CALL skipped: TelegramCustomerId is not numeric (%s)", chat_id)
+        logging.warning("VISIT_CALL skipped: TelegramChatId/TelegramCustomerId is not numeric (%s)", chat_id)
         return
 
     allowed_prefixes = USER_BRANCH_SUBSCRIPTIONS.get(chat_id_int, set())
@@ -757,6 +757,7 @@ def create_visit(branch: BranchConfig, service_ids: List[str], customer_id: str,
             "serviceIds": service_ids,
             "parameters": {
                 "TelegramCustomerId": customer_id,
+                "TelegramChatId": customer_id,
                 "TelegramCustomerFullName": customer_name,
             },
         }
@@ -767,6 +768,7 @@ def create_visit(branch: BranchConfig, service_ids: List[str], customer_id: str,
             "services": service_ids,
             "parameters": {
                 "TelegramCustomerId": customer_id,
+                "TelegramChatId": customer_id,
                 "TelegramCustomerFullName": customer_name,
             }
         }
