@@ -751,7 +751,7 @@ def create_visit(branch: BranchConfig, service_ids: List[str], customer_id: str,
     queue_system, base_url, login, password = get_branch_connection(branch)
     base = base_url.rstrip('/')
     if queue_system == 'axioma':
-        url = f'{base}/entrypoint/branches/{branch.branch_id}/entry-points/{branch.entry_point_id}/visits'
+        url = f'{base}/entrypoint/branches/{branch.branch_id}/entry-points/{branch.entry_point_id}/visits/parameters'
         params = {"printTicket": "false"}
         payload = {
             "serviceIds": service_ids,
