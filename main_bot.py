@@ -74,6 +74,7 @@ class PathOption:
     next_question_id: Optional[str] = None
     service_ids: Optional[List[int]] = None
     service_names: Optional[List[str]] = None
+    multi_services_action: str = "choose"
 
 
 @dataclass
@@ -111,7 +112,17 @@ def _parse_single_client_path(data: dict) -> Optional[ClientPathConfig]:
             service_ids = [int(x) for x in oraw.get("services", [])] if isinstance(oraw.get("services"), list) else None
             service_names = [str(x).strip() for x in oraw.get("service_names", []) if str(x).strip()] if isinstance(oraw.get("service_names"), list) else None
             next_question_id = str(oraw.get("next_question_id")).strip() if oraw.get("next_question_id") else None
-            options.append(PathOption(text=text, next_question_id=next_question_id, service_ids=service_ids, service_names=service_names))
+            raw_action = str(oraw.get("multi_services_action") or "choose").strip().lower()
+            multi_services_action = raw_action if raw_action in {"auto", "choose", "choose_many"} else "choose"
+            options.append(
+                PathOption(
+                    text=text,
+                    next_question_id=next_question_id,
+                    service_ids=service_ids,
+                    service_names=service_names,
+                    multi_services_action=multi_services_action,
+                )
+            )
 
         text = str(qraw.get("text") or "").strip()
         if text and options:
@@ -599,6 +610,14 @@ def build_services_keyboard(services: List[dict], selected_ids: Set[int], multi_
 def get_services(branch_id: int, selected_ids: Set[int] = None, multi_enabled: bool = False) -> Tuple[InlineKeyboardMarkup, List[dict]]:
     services = get_services_data(branch_id)
     return build_services_keyboard(services, selected_ids or set(), multi_enabled), services
+
+
+def get_path_mapped_services(state_data: dict, services: List[dict]) -> List[dict]:
+    mapped_ids = {int(x) for x in state_data.get("path_mapped_service_ids", [])}
+    if not mapped_ids:
+        return services
+    mapped_services = [service for service in services if int(service['id']) in mapped_ids]
+    return mapped_services or services
 @dp.message_handler(commands=["start"])
 async def cmd_start(message: types.Message, state: FSMContext):
     await state.finish()
@@ -656,9 +675,32 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
         await state.set_state(States.get_ticket)
         return
 
-    service_ids = get_option_service_ids(option, services)
+    service_ids = sorted(set(get_option_service_ids(option, services)))
     if not service_ids:
         await bot.send_message(callback.from_user.id, "Для этого варианта не настроены услуги")
+        return
+
+    if len(service_ids) > 1 and option.multi_services_action == "auto":
+        visit = create_visit(branch.branch_id, branch.entry_point_id, service_ids, str(callback.from_user.id), callback.from_user.full_name)
+        if visit:
+            ticket = visit.get("ticketId") or visit.get("ticket")
+            await bot.send_message(callback.from_user.id, f"Ваш талон: {ticket}")
+            USER_BRANCH_SUBSCRIPTIONS.setdefault(callback.from_user.id, set()).add(branch.prefix)
+            await state.finish()
+        else:
+            await bot.send_message(callback.from_user.id, "Ошибка создания талона")
+        return
+
+    if len(service_ids) > 1:
+        mapped_services = [service for service in services if int(service['id']) in set(service_ids)]
+        allow_multi_choice = option.multi_services_action == "choose_many"
+        await state.update_data(path_mapped_service_ids=service_ids, selected_service_ids=[], path_allow_multi_choice=allow_multi_choice)
+        await bot.send_message(
+            callback.from_user.id,
+            "По выбранному ответу доступны несколько услуг. Выберите нужную:",
+            reply_markup=build_services_keyboard(mapped_services, set(), allow_multi_choice),
+        )
+        await state.set_state(States.get_ticket)
         return
 
     visit = create_visit(branch.branch_id, branch.entry_point_id, service_ids, str(callback.from_user.id), callback.from_user.full_name)
@@ -700,6 +742,7 @@ async def pick_path_other(callback: types.CallbackQuery, state: FSMContext):
         return
 
     branch = BRANCH_MAP.get(branch_id)
+    await state.update_data(path_mapped_service_ids=[], selected_service_ids=[], path_allow_multi_choice=False)
     await bot.send_message(callback.from_user.id, "Выберите услугу:", reply_markup=build_services_keyboard(other_services, set(), is_multi_service_enabled(branch)))
     await state.set_state(States.get_ticket)
 
@@ -715,8 +758,12 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
         await state.finish()
         return
 
-    multi_enabled = is_multi_service_enabled(branch)
+    path_multi_override = state_data.get("path_allow_multi_choice")
+    multi_enabled = bool(path_multi_override) if path_multi_override is not None else is_multi_service_enabled(branch)
     selected_service_ids = set(state_data.get("selected_service_ids", []))
+    services = get_services_data(branch_id)
+    available_services = get_path_mapped_services(state_data, services)
+    available_service_ids = {int(service['id']) for service in available_services}
 
     service_data = callback.data.split(":", 1)[1]
     if service_data == "confirm":
@@ -726,13 +773,16 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
         service_ids = sorted(selected_service_ids)
     else:
         service_id = int(service_data)
+        if service_id not in available_service_ids:
+            await bot.send_message(callback.from_user.id, "Эта услуга недоступна для текущего шага. Выберите из предложенных вариантов.")
+            return
         if multi_enabled:
             if service_id in selected_service_ids:
                 selected_service_ids.remove(service_id)
             else:
                 selected_service_ids.add(service_id)
             await state.update_data(selected_service_ids=list(selected_service_ids))
-            keyboard, _ = get_services(branch_id, selected_service_ids, multi_enabled=True)
+            keyboard = build_services_keyboard(available_services, selected_service_ids, multi_enabled=True)
             await callback.message.edit_reply_markup(reply_markup=keyboard)
             return
         service_ids = [service_id]

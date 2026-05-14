@@ -23,6 +23,7 @@ Telegram-бот электронной очереди для Orchestra, кото
   - [Multi-branch (рекомендуется)](#multi-branch-рекомендуется)
   - [Single-branch fallback](#single-branch-fallback-обратная-совместимость)
   - [Мультисервис](#мультисервис-несколько-услуг-в-один-визит)
+- [Клиентский путь (`client_path.yml`)](#клиентский-путь-client_pathyml)
 - [Запуск](#запуск)
   - [Локально](#локально)
   - [Docker Compose](#docker-compose)
@@ -153,6 +154,34 @@ ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED={"6":true,"SVR":false}
 1. Значение для отделения в `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED`
 2. Иначе глобальный `ORCHESTRA_MULTI_SERVICE_ENABLED`
 3. Если оба отсутствуют — выключено
+
+## Клиентский путь (`client_path.yml`)
+
+Файл `client_path.yml` позволяет настроить опрос клиента по шагам и привязать ответы к услугам.
+
+Ключевые поля в `options`:
+
+- `next_question_id` — переход к следующему вопросу (талон на этом шаге не создается).
+- `services` — список ID услуг (числа).
+- `service_names` — список названий услуг (маппинг по имени услуги из Orchestra).
+- `multi_services_action` — режим обработки ответа, если он соответствует нескольким услугам:
+  - `auto` — создать визит сразу со всеми услугами;
+  - `choose` — показать найденные услуги и попросить выбрать одну;
+  - `choose_many` — показать найденные услуги, позволить выбрать несколько и нажать подтверждение.
+
+Если `multi_services_action` не задан, используется значение `choose`.
+
+Пример:
+
+```yaml
+options:
+  - text: "Новый кредит"
+    service_names: ["Кредиты", "Страхование"]
+    multi_services_action: choose_many
+  - text: "Сделка с недвижимостью"
+    service_names: ["Сделки", "Заверение документов"]
+    multi_services_action: auto
+```
 
 ## Запуск
 
