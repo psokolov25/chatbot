@@ -754,7 +754,7 @@ def create_visit(branch: BranchConfig, service_ids: List[str], customer_id: str,
         url = f'{base}/entrypoint/branches/{branch.branch_id}/entry-points/{branch.entry_point_id}/visits'
         params = {"printTicket": "false"}
         payload = {
-            "services": service_ids,
+            "serviceIds": service_ids,
             "parameters": {
                 "TelegramCustomerId": customer_id,
                 "TelegramCustomerFullName": customer_name,
