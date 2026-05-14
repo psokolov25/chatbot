@@ -572,6 +572,17 @@ def is_branch_selection_first() -> bool:
     value = os.getenv("ORCHESTRA_FLOW_ORDER", "ACTION_FIRST").strip().upper()
     return value in {"BRANCH_FIRST", "BRANCH_THEN_ACTION"}
 
+def get_branch_connection(branch: BranchConfig) -> Tuple[str, str, str, str]:
+    queue_system = (branch.queue_system or QUEUE_SYSTEM).strip().lower()
+    if queue_system not in {"orchestra", "axioma"}:
+        queue_system = QUEUE_SYSTEM
+
+    base_url = (branch.base_url or SYSTEM_BASE_URL).strip()
+    login = (branch.login or SYSTEM_LOGIN).strip()
+    password = (branch.password or SYSTEM_PASSWORD).strip()
+    return queue_system, base_url, login, password
+
+
 def get_services_request(branch: BranchConfig):
     queue_system, base_url, login, password = get_branch_connection(branch)
     base = base_url.rstrip('/')
