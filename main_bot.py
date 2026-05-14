@@ -626,6 +626,10 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
         return
 
     client_path = get_client_path_for_branch(branch)
+    if not client_path:
+        await bot.send_message(callback.from_user.id, "Сценарий клиента для отделения не настроен")
+        return
+
     _, question_id, option_idx_raw = callback.data.split(":", 2)
     question = client_path.questions.get(question_id)
     if not question:
@@ -757,7 +761,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
         state_data = await state.get_data()
         preset_branch_id = int(state_data.get("branch_id", 0) or 0)
         if preset_branch_id in BRANCH_MAP:
-            client_path = get_client_path_for_branch(BRANCH_MAP[branch_id])
+            client_path = get_client_path_for_branch(BRANCH_MAP[preset_branch_id])
             if client_path:
                 root_question = client_path.questions[client_path.root_question_id]
                 services = get_services_data(preset_branch_id)
@@ -812,7 +816,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
             await bot.send_message(callback.from_user.id, "Выберите действие:", reply_markup=main_menu_keyboard)
             await state.set_state(States.appointment)
         else:
-            client_path = get_client_path_for_branch(BRANCH_MAP[preset_branch_id])
+            client_path = get_client_path_for_branch(BRANCH_MAP[branch_id])
             if client_path:
                 root_question = client_path.questions[client_path.root_question_id]
                 services = get_services_data(branch_id)
