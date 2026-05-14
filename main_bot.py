@@ -226,6 +226,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 last_connect_ok = 0        # timestamp последнего успешного /meta/connect
 last_event_received = 0    # timestamp последнего события
 cometd_task = None         # ссылка на фоновой CometD-задачу
+kafka_task = None          # ссылка на фоновой Kafka-задачу для Axioma
 cometd_reconnecting = False # флаг: идёт цикл переподключения после ошибки
 
 
@@ -414,39 +415,160 @@ async def run_cometd_session(
                         except:
                             continue
 
-                    E = (data or {}).get("E", {})
-                    event_type = E.get("evnt")
+                    branch_prefix = channel.split("/")[2] if channel and channel.count("/") >= 2 else None
+                    await process_visit_call_event(bot, data if isinstance(data, dict) else {}, branch_prefix)
 
-                    if event_type == "VISIT_CALL":
-                        event_context = E
-                        prm = E.get("prm", {})
-                        logging.info("VISIT_CALL payload: %s", sanitize_payload(prm))
-                        chat_id = prm.get("TelegramCustomerId")
-                        if chat_id:
-                            branch_prefix = channel.split("/")[2] if channel and channel.count("/") >= 2 else None
-                            try:
-                                chat_id_int = int(chat_id)
-                            except (TypeError, ValueError):
-                                continue
-                            allowed_prefixes = USER_BRANCH_SUBSCRIPTIONS.get(chat_id_int, set())
-                            if branch_prefix and allowed_prefixes and branch_prefix not in allowed_prefixes:
-                                continue
-                            branch = next((b for b in BRANCHES if b.prefix == branch_prefix), None)
-                            if not branch:
-                                continue
-                            try:
-                                await bot.send_message(
-                                    chat_id_int,
-                                    render_visit_call_message(
-                                        branch.visit_call_template,
-                                        DEFAULT_VISIT_CALL_TEMPLATE,
-                                        prm,
-                                        event_context,
-                                    ),
-                                )
-                            except:
-                                logging.exception("Telegram send error")
 
+
+
+async def process_visit_call_event(bot: Bot, data: dict, branch_prefix: str = None):
+    event_context = (data or {}).get("E", {})
+    if event_context.get("evnt") not in {"VISIT_CALL", "VISIT_RECALL"}:
+        return
+
+    prm = event_context.get("prm", {})
+    logging.info("VISIT_CALL payload: %s", sanitize_payload(prm))
+    chat_id = prm.get("TelegramCustomerId")
+    if not chat_id:
+        return
+
+    try:
+        chat_id_int = int(chat_id)
+    except (TypeError, ValueError):
+        logging.warning("VISIT_CALL skipped: TelegramCustomerId is not numeric (%s)", chat_id)
+        return
+
+    allowed_prefixes = USER_BRANCH_SUBSCRIPTIONS.get(chat_id_int, set())
+    if branch_prefix and allowed_prefixes and branch_prefix not in allowed_prefixes:
+        return
+
+    branch = next((b for b in BRANCHES if b.prefix == branch_prefix), None) if branch_prefix else None
+    if not branch:
+        branch = BRANCHES[0] if len(BRANCHES) == 1 else None
+    if not branch:
+        return
+
+    try:
+        await bot.send_message(
+            chat_id_int,
+            render_visit_call_message(
+                branch.visit_call_template,
+                DEFAULT_VISIT_CALL_TEMPLATE,
+                prm,
+                event_context,
+            ),
+        )
+    except Exception:
+        logging.exception("Telegram send error")
+
+
+def normalize_axioma_kafka_event(payload: dict) -> Tuple[dict, str]:
+    if not isinstance(payload, dict):
+        return {}, None
+
+    event_type = payload.get("eventType")
+    body = payload.get("body") if isinstance(payload.get("body"), dict) else {}
+    if event_type not in {"VISIT_CALLED", "VISIT_RECALLED"} or not body:
+        return {}, None
+
+    mapped_event_type = "VISIT_CALL" if event_type == "VISIT_CALLED" else "VISIT_RECALL"
+    prm = dict(body.get("parameterMap") or {})
+    if "ticketId" not in prm and body.get("ticket"):
+        prm["ticketId"] = body.get("ticket")
+    if "servicePointName" not in prm:
+        prm["servicePointName"] = ((body.get("events") or [{}])[-1].get("parameters") or {}).get("servicePointName")
+
+    normalized = {
+        "E": {
+            "evnt": mapped_event_type,
+            "prm": prm,
+        }
+    }
+    return normalized, (body.get("branchPrefix") or payload.get("branchPrefix"))
+
+
+def resolve_axioma_kafka_servers_by_branch() -> Dict[str, str]:
+    """
+    Returns mapping: branch_id -> bootstrap servers.
+    Priority:
+    1) ORCHESTRA_BRANCH_KAFKA_SERVERS JSON (by branch_id or prefix)
+    2) AXIOMA_KAFKA_BOOTSTRAP_SERVERS
+    3) debug default 192.168.8.40:29092
+    """
+    default_servers = os.getenv("AXIOMA_KAFKA_BOOTSTRAP_SERVERS", "").strip() or "192.168.8.40:29092"
+    raw = os.getenv("ORCHESTRA_BRANCH_KAFKA_SERVERS", "").strip()
+    per_branch = {}
+
+    if raw:
+        try:
+            parsed = json.loads(raw)
+            if isinstance(parsed, dict):
+                per_branch = {str(k): str(v).strip() for k, v in parsed.items() if str(v).strip()}
+        except json.JSONDecodeError:
+            logging.warning("Invalid ORCHESTRA_BRANCH_KAFKA_SERVERS JSON: %s", raw)
+
+    out: Dict[str, str] = {}
+    for branch in BRANCHES:
+        if get_branch_connection(branch)[0] != "axioma":
+            continue
+        out[branch.branch_id] = (
+            per_branch.get(branch.branch_id)
+            or per_branch.get(branch.prefix)
+            or default_servers
+        )
+    return out
+
+
+async def consume_kafka_group(bot: Bot, topic: str, group_id: str, bootstrap_servers: str):
+    from aiokafka import AIOKafkaConsumer
+
+    consumer = AIOKafkaConsumer(
+        topic,
+        bootstrap_servers=[x.strip() for x in bootstrap_servers.split(",") if x.strip()],
+        group_id=group_id,
+        enable_auto_commit=True,
+        auto_offset_reset="latest",
+        value_deserializer=lambda v: v.decode("utf-8", errors="ignore"),
+    )
+
+    logging.info("Starting Kafka consumer for Axioma branches. topic=%s servers=%s", topic, bootstrap_servers)
+    await consumer.start()
+    try:
+        async for msg in consumer:
+            try:
+                payload = json.loads(msg.value)
+            except Exception:
+                continue
+
+            normalized, branch_prefix = normalize_axioma_kafka_event(payload)
+            if normalized:
+                await process_visit_call_event(bot, normalized, branch_prefix)
+    finally:
+        await consumer.stop()
+
+
+async def kafka_events_consumer(bot: Bot):
+    axioma_servers_by_branch = resolve_axioma_kafka_servers_by_branch()
+    if not axioma_servers_by_branch:
+        logging.info("No Axioma branches configured for Kafka events")
+        return
+
+    try:
+        import aiokafka  # noqa: F401
+    except Exception:
+        logging.exception("aiokafka is not available; cannot start Kafka consumer")
+        return
+
+    topic = os.getenv("AXIOMA_KAFKA_EVENTS_TOPIC", "events").strip() or "events"
+    base_group_id = os.getenv("AXIOMA_KAFKA_GROUP_ID", "telegram-queue-bot")
+
+    unique_server_groups = sorted(set(axioma_servers_by_branch.values()))
+    tasks = []
+    for idx, servers in enumerate(unique_server_groups, start=1):
+        group_id = f"{base_group_id}-{idx}"
+        tasks.append(asyncio.create_task(consume_kafka_group(bot, topic, group_id, servers)))
+
+    await asyncio.gather(*tasks)
 
 # ================================================================
 # WATCHDOG — гарантирует восстановление при любом зависании
@@ -458,7 +580,7 @@ async def cometd_watchdog(start_callback):
     - падение фоновой задачи
     - «тихая смерть» после пересброса Orchestra
     """
-    global cometd_task, last_connect_ok, last_event_received, cometd_reconnecting
+    global cometd_task, kafka_task, last_connect_ok, last_event_received, cometd_reconnecting
 
     CHECK_INTERVAL = 30
     CONNECT_TIMEOUT = 120
@@ -535,7 +657,10 @@ async def cometd(bot: Bot):
     channel_init = "/events/INIT"
     grouped_channels: Dict[Tuple[str, str, str], List[str]] = {}
     for branch in BRANCHES:
-        _, base_url, login, password = get_branch_connection(branch)
+        queue_system, base_url, login, password = get_branch_connection(branch)
+        if queue_system != "orchestra":
+            logging.info("Skip CometD subscribe for branch %s (%s): queue system is %s", branch.branch_id, branch.prefix, queue_system)
+            continue
         key = (base_url.rstrip("/"), login, password)
         grouped_channels.setdefault(key, []).append(f"/events/{branch.prefix}/QVoiceLight")
 
@@ -557,6 +682,10 @@ async def cometd(bot: Bot):
                 )
             )
         )
+
+    if not tasks:
+        logging.info("No Orchestra branches configured for CometD subscriptions")
+        return
 
     await asyncio.gather(*tasks)
 
@@ -973,7 +1102,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
 # STARTUP LOGIC
 # ================================================================
 async def on_startup(dp: Dispatcher):
-    global cometd_task
+    global cometd_task, kafka_task
 
     def start():
         return asyncio.create_task(cometd(dp.bot))
@@ -983,6 +1112,9 @@ async def on_startup(dp: Dispatcher):
 
     # старт watchdog
     asyncio.create_task(cometd_watchdog(start))
+
+    # старт Kafka consumer для Axioma branches
+    kafka_task = asyncio.create_task(kafka_events_consumer(dp.bot))
 
 
 def main():
