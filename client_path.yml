@@ -15,9 +15,17 @@
 
 journeys:
   # Пример 1: Банк (например, Сбербанк Минск)
-  - branches: ["7", "SBR", "Сбербанк Минск"]
-    root_question_id: bank_q1
+  - branches: ["5", "SBR", "Сбербанк г. Минск"]
+    root_question_id: bank_q0
     questions:
+      bank_q0:
+        text: "Выберите формат обращения"
+        options:
+          - text: "Физическое лицо"
+            next_question_id: bank_q1
+          - text: "Другое обращение"
+            next_question_id: bank_q1
+
       bank_q1:
         text: "Что вы хотите сделать в банке?"
         options:
@@ -96,8 +104,16 @@ journeys:
 
   # Пример 2: Нотариус
   - branches: ["6", "NTR", "Нотариус"]
-    root_question_id: notary_q1
+    root_question_id: notary_q0
     questions:
+      notary_q0:
+        text: "Выберите формат обращения"
+        options:
+          - text: "Личное обращение"
+            next_question_id: notary_q1
+          - text: "Обращение по доверенности"
+            next_question_id: notary_q1
+
       notary_q1:
         text: "По какому вопросу вы обратились?"
         options:
@@ -156,8 +172,16 @@ journeys:
 
   # Fallback-маршрут для остальных отделений
   - default: true
-    root_question_id: default_q1
+    root_question_id: default_q0
     questions:
+      default_q0:
+        text: "Какой формат обращения?"
+        options:
+          - text: "Личное обращение"
+            next_question_id: default_q1
+          - text: "Обращение по доверенности"
+            next_question_id: default_q1
+
       default_q1:
         text: "С какой целью обращаетесь?"
         options:
@@ -214,8 +238,16 @@ journeys:
 
   # Пример 3: Axioma (Банк "Дубна")
   - branches: ["cd842979-3dc1-4505-a1ae-9a92f0622da2", "DUB", "Банк \"Дубна\""]
-    root_question_id: axioma_q1
+    root_question_id: axioma_q0
     questions:
+      axioma_q0:
+        text: "Выберите формат обращения"
+        options:
+          - text: "Основное обслуживание"
+            next_question_id: axioma_q1
+          - text: "Повторное обращение"
+            next_question_id: axioma_q1
+
       axioma_q1:
         text: "Какой продукт вас интересует?"
         options:
