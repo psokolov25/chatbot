@@ -747,30 +747,36 @@ def get_services_request(branch: BranchConfig):
     return r.json()
 
 
-def create_visit(branch: BranchConfig, service_ids: List[str], customer_id: str, customer_name: str):
+def create_visit(
+    branch: BranchConfig,
+    service_ids: List[str],
+    customer_id: str,
+    customer_name: str,
+    client_path_answers: Optional[Dict[str, str]] = None,
+):
     queue_system, base_url, login, password = get_branch_connection(branch)
     base = base_url.rstrip('/')
+    visit_parameters = {
+        "TelegramCustomerId": customer_id,
+        "TelegramChatId": customer_id,
+        "TelegramCustomerFullName": customer_name,
+    }
+    if client_path_answers:
+        visit_parameters["TelegramClientPath"] = json.dumps(client_path_answers, ensure_ascii=False)
+
     if queue_system == 'axioma':
         url = f'{base}/entrypoint/branches/{branch.branch_id}/entry-points/{branch.entry_point_id}/visits/parameters'
         params = {"printTicket": "false"}
         payload = {
             "serviceIds": service_ids,
-            "parameters": {
-                "TelegramCustomerId": customer_id,
-                "TelegramChatId": customer_id,
-                "TelegramCustomerFullName": customer_name,
-            },
+            "parameters": visit_parameters,
         }
     else:
         url = f'{base}/rest/entrypoint/branches/{branch.branch_id}/entryPoints/{branch.entry_point_id}/visits/'
         params = None
         payload = {
             "services": service_ids,
-            "parameters": {
-                "TelegramCustomerId": customer_id,
-                "TelegramChatId": customer_id,
-                "TelegramCustomerFullName": customer_name,
-            }
+            "parameters": visit_parameters
         }
 
     logging.info("POST create visit: %s payload=%s", url, payload)
@@ -888,6 +894,9 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
         return
 
     option = question.options[option_idx]
+    path_answers = dict(state_data.get("path_answers", {}))
+    path_answers[question.text] = option.text
+    await state.update_data(path_answers=path_answers)
     services = get_services_data(branch)
 
     if option.next_question_id:
@@ -907,7 +916,13 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
         return
 
     if len(service_ids) > 1 and option.multi_services_action == "auto":
-        visit = create_visit(branch, service_ids, str(callback.from_user.id), callback.from_user.full_name)
+        visit = create_visit(
+            branch,
+            service_ids,
+            str(callback.from_user.id),
+            callback.from_user.full_name,
+            client_path_answers=path_answers,
+        )
         if visit:
             ticket = visit.get("ticketId") or visit.get("ticket")
             await bot.send_message(callback.from_user.id, f"Ваш талон: {ticket}")
@@ -929,7 +944,13 @@ async def pick_path_option(callback: types.CallbackQuery, state: FSMContext):
         await state.set_state(States.get_ticket)
         return
 
-    visit = create_visit(branch, service_ids, str(callback.from_user.id), callback.from_user.full_name)
+    visit = create_visit(
+        branch,
+        service_ids,
+        str(callback.from_user.id),
+        callback.from_user.full_name,
+        client_path_answers=path_answers,
+    )
     if visit:
         ticket = visit.get("ticketId") or visit.get("ticket")
         await bot.send_message(callback.from_user.id, f"Ваш талон: {ticket}")
@@ -1018,6 +1039,7 @@ async def pick_service(callback: types.CallbackQuery, state: FSMContext):
         service_ids,
         str(callback.from_user.id),
         callback.from_user.full_name,
+        client_path_answers=state_data.get("path_answers"),
     )
     if visit:
         ticket = visit.get("ticketId") or visit.get("ticket")
@@ -1040,7 +1062,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
             if client_path:
                 root_question = client_path.questions[client_path.root_question_id]
                 services = get_services_data(BRANCH_MAP[preset_branch_id])
-                await state.update_data(path_question_id=root_question.question_id)
+                await state.update_data(path_question_id=root_question.question_id, path_answers={})
                 await bot.send_message(callback.from_user.id, root_question.text, reply_markup=build_client_path_keyboard(root_question, services))
             else:
                 await bot.send_message(
@@ -1057,7 +1079,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
             if client_path:
                 root_question = client_path.questions[client_path.root_question_id]
                 services = get_services_data(BRANCH_MAP[single_branch_id])
-                await state.update_data(path_question_id=root_question.question_id)
+                await state.update_data(path_question_id=root_question.question_id, path_answers={})
                 await bot.send_message(callback.from_user.id, root_question.text, reply_markup=build_client_path_keyboard(root_question, services))
             else:
                 await bot.send_message(
@@ -1095,7 +1117,7 @@ async def callbacks(callback: types.CallbackQuery, state: FSMContext):
             if client_path:
                 root_question = client_path.questions[client_path.root_question_id]
                 services = get_services_data(branch)
-                await state.update_data(path_question_id=root_question.question_id)
+                await state.update_data(path_question_id=root_question.question_id, path_answers={})
                 await bot.send_message(callback.from_user.id, root_question.text, reply_markup=build_client_path_keyboard(root_question, services))
             else:
                 await bot.send_message(
