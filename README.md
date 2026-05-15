@@ -89,6 +89,7 @@ python main_bot.py
 | `ORCHESTRA_MULTI_SERVICE_ENABLED` | Включить выбор нескольких услуг (`true/false`) | `false` |
 | `ORCHESTRA_BRANCH_MULTI_SERVICE_ENABLED` | JSON-переопределения мультисервиса по `branchId`/`prefix` | пусто |
 | `LOG_LEVEL` | Уровень логирования Python (`DEBUG/INFO/WARNING/ERROR/CRITICAL`) | `INFO` |
+| `VISIT_IDENTIFICATOR_MODE` | Источник плейсхолдера `{identificator}` в шаблоне уведомления: `ticket` (номер талона) или `visit_json` (JSON тела визита) | `ticket` |
 
 ### Шаблоны уведомлений
 

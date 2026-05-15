@@ -43,6 +43,7 @@ SERVICE_BLACKLIST = {
     if name.strip()
 }
 logging.info("Service blacklist: %s", SERVICE_BLACKLIST)
+IDENTIFICATOR_MODE = os.getenv("VISIT_IDENTIFICATOR_MODE", "ticket")
 DEFAULT_VISIT_CALL_TEMPLATE = os.getenv(
     "VISIT_CALL_TEMPLATE",
     "Уважаемый клиент! Вы вызваны к специалисту. Обратите внимание на ТВ-панель. Заранее спасибо!",
@@ -429,6 +430,7 @@ async def run_cometd_session(bot: Bot, cometd_url: str, channel_subscribe_list: 
                                         DEFAULT_VISIT_CALL_TEMPLATE,
                                         prm,
                                         event_context,
+                                        IDENTIFICATOR_MODE,
                                     ),
                                 )
                             except:
