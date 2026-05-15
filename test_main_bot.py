@@ -121,6 +121,29 @@ def test_sanitize_payload_masks_personal_data():
     assert sanitized["nested"]["email"] == "***"
 
 
+
+
+def test_render_visit_call_message_uses_ticket_identificator_by_default():
+    message = render_visit_call_message(
+        "ID: {identificator}",
+        "default",
+        {"ticketId": "Д048"},
+        {"id": 3401, "ticketId": "Д048"},
+    )
+    assert message == "ID: Д048"
+
+
+def test_render_visit_call_message_uses_visit_json_identificator_mode():
+    message = render_visit_call_message(
+        "ID: {identificator}",
+        "default",
+        {"ticketId": "Д048"},
+        {"id": 3401, "ticketId": "Д048"},
+        identificator_mode="visit_json",
+    )
+    assert message == 'ID: {"id":3401,"ticketId":"Д048"}'
+
+
 def test_log_level_from_env():
     os.environ["LOG_LEVEL"] = "WARNING"
     assert get_log_level() == 30
